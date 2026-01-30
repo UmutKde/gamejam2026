@@ -1,23 +1,67 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public Transform parentToReturnTo = null;
     public bool isLocked = false;
 
-    CanvasGroup canvasGroup;
-    RectTransform rectTransform;
+    [Header("Kart Ayarlarý")]
+    public bool belongsToPlayerOne = true;
+    public Sprite cardFrontSprite;
+    public Sprite cardBackSprite;
+
+    private Image cardImage;
+    private CanvasGroup canvasGroup;
+    private RectTransform rectTransform;
 
     void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
+        cardImage = GetComponent<Image>();
+
+        if (cardFrontSprite == null) cardFrontSprite = cardImage.sprite;
+    }
+
+    void Start()
+    {
+        UpdateCardVisualsAndState();
+    }
+
+    public void UpdateCardVisualsAndState()
+    {
+        if (isLocked) return;
+
+        bool isMyTurn = false;
+
+        if (TurnManager.Instance.isPlayerOneTurn && belongsToPlayerOne)
+        {
+            isMyTurn = true;
+        }
+        else if (!TurnManager.Instance.isPlayerOneTurn && !belongsToPlayerOne)
+        {
+            isMyTurn = true;
+        }
+
+        if (isMyTurn)
+        {
+            cardImage.sprite = cardFrontSprite;
+            canvasGroup.blocksRaycasts = true;
+        }
+        else
+        {
+            cardImage.sprite = cardBackSprite;
+            canvasGroup.blocksRaycasts = false;
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (isLocked) return;
+        bool isMyTurn = (TurnManager.Instance.isPlayerOneTurn == belongsToPlayerOne);
+        if (!isMyTurn || isLocked) return;
+
         parentToReturnTo = transform.parent;
         transform.SetParent(transform.root);
         canvasGroup.blocksRaycasts = false;
@@ -25,7 +69,8 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (isLocked) return;
+        bool isMyTurn = (TurnManager.Instance.isPlayerOneTurn == belongsToPlayerOne);
+        if (!isMyTurn || isLocked) return;
         transform.position = eventData.position;
     }
 
@@ -46,5 +91,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         canvasGroup.blocksRaycasts = true;
         isLocked = true;
         transform.localScale = new Vector3(0.7f, 0.7f, 1f);
+        cardImage.sprite = cardFrontSprite;
     }
 }
