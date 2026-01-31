@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -81,7 +82,8 @@ public class GameLogic : MonoBehaviour
             if (passCounter >= 2)
             {
                 // Savaþ Baþlýyor -> Savaþ bitince sýra mantýðý ResolveCombat içinde kurulacak
-                ResolveCombat();
+                StartCoroutine(ResolveCombatCoroutine());
+                //ResolveCombat();
             }
             else
             {
@@ -96,65 +98,103 @@ public class GameLogic : MonoBehaviour
     }
 
     // --- 4. SAVAÞ MEKANÝÐÝ (CORE) ---
-    void ResolveCombat()
+    // --- 4. SAVAÞ MEKANÝÐÝ (CORE - COROUTINE) ---
+    IEnumerator ResolveCombatCoroutine()
     {
         Debug.Log($"--- {activeLaneIndex}. BÖLGE SAVAÞI BAÞLADI ---");
 
-        // 1. O anki lane'deki kartlarý bul
         int p1CardUniqueId = GameManager.Instance.currentState.p1Slots[activeLaneIndex];
         int p2CardUniqueId = GameManager.Instance.currentState.p2Slots[activeLaneIndex];
 
         CardData p1Data = null;
         CardData p2Data = null;
+        Draggable p1Draggable = null;
+        Draggable p2Draggable = null;
 
-        // ID'leri kullanarak orjinal datalara (Atak gücü için) ulaþ
-        if (p1CardUniqueId != -1) p1Data = GameManager.Instance.GetCardDataByUniqueId(p1CardUniqueId);
-        if (p2CardUniqueId != -1) p2Data = GameManager.Instance.GetCardDataByUniqueId(p2CardUniqueId);
+        // ÖN HESAPLAMA DEÐÝÞKENLERÝ
+        bool p1WillDie = false;
+        bool p2WillDie = false;
 
-        // --- SENARYO 1: KARÞILIKLI ÇARPIÞMA (FETÝH YOK) ---
+        // 1. Verileri Topla
+        if (p1CardUniqueId != -1)
+        {
+            p1Data = GameManager.Instance.GetCardDataByUniqueId(p1CardUniqueId);
+            p1Draggable = FindDraggableByUniqueId(p1CardUniqueId);
+        }
+        if (p2CardUniqueId != -1)
+        {
+            p2Data = GameManager.Instance.GetCardDataByUniqueId(p2CardUniqueId);
+            p2Draggable = FindDraggableByUniqueId(p2CardUniqueId);
+        }
+
+        // 2. Ölecekleri Önceden Hesapla (Animasyona haber vermek için)
         if (p1Data != null && p2Data != null)
         {
-            // Canlarý çek
+            int p1TempHp = liveCardHealths[p1CardUniqueId] - p2Data.attackPoint;
+            int p2TempHp = liveCardHealths[p2CardUniqueId] - p1Data.attackPoint;
+
+            if (p1TempHp <= 0) p1WillDie = true;
+            if (p2TempHp <= 0) p2WillDie = true;
+        }
+
+        // 3. ANÝMASYONU BAÞLAT
+        if (p1Draggable != null && p2Draggable != null)
+        {
+            p1Draggable.RevealCard();
+            p2Draggable.RevealCard();
+
+            // Buradaki parametreler ile "Vurulduðu an yok ol" emrini veriyoruz
+            yield return CombatVisualManager.Instance.StartClashAnimation(p1Draggable, p2Draggable, p1WillDie, p2WillDie);
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // 4. GERÇEK VERÝLERÝ GÜNCELLE (Database Ýþlemi)
+        if (p1Data != null && p2Data != null)
+        {
             int p1Hp = liveCardHealths[p1CardUniqueId];
             int p2Hp = liveCardHealths[p2CardUniqueId];
 
-            // Birbirlerine vururlar (Kalýcý Hasar)
             p1Hp -= p2Data.attackPoint;
             p2Hp -= p1Data.attackPoint;
 
-            // Canlarý güncelle
             liveCardHealths[p1CardUniqueId] = p1Hp;
             liveCardHealths[p2CardUniqueId] = p2Hp;
 
-            Debug.Log($"Çarpýþma! P1 Kart Caný: {p1Hp}, P2 Kart Caný: {p2Hp}");
-
-            // Ölüm Kontrolü
+            // Zaten görsel olarak gizledik, þimdi mantýksal olarak siliyoruz.
             if (p1Hp <= 0) KillCard(1, activeLaneIndex, p1CardUniqueId);
             if (p2Hp <= 0) KillCard(2, activeLaneIndex, p2CardUniqueId);
 
-            // Feth SAYILMAZ. Oyun ayný bölgede devam eder.
-            // Sýra: En son pas diyen (savaþý baþlatan) kiþide baþlar.
             ResetRound(lastPasserId);
         }
-        // --- SENARYO 2: P1 VURDU, P2 BOÞ (FETÝH!) ---
         else if (p1Data != null && p2Data == null)
         {
-            Debug.Log("P1 BÖLGEYÝ FETHETTÝ!");
             ConquerLane(1);
         }
-        // --- SENARYO 3: P2 VURDU, P1 BOÞ (FETÝH!) ---
         else if (p2Data != null && p1Data == null)
         {
-            Debug.Log("P2 BÖLGEYÝ FETHETTÝ!");
             ConquerLane(2);
         }
-        // --- SENARYO 4: ÝKÝSÝ DE BOÞ ---
         else
         {
-            Debug.Log("Savaþ alaný sessiz... Devam.");
             ResetRound(lastPasserId);
         }
+
+        // Herkesi güncelle (Ölenler tamamen Destroy olacak)
         GameManager.Instance.BroadcastState();
+    }
+
+    // Yardýmcý fonksiyon (GameLogic içine ekle)
+    private Draggable FindDraggableByUniqueId(int uniqueId)
+    {
+        Draggable[] cards = FindObjectsByType<Draggable>(FindObjectsSortMode.None);
+        foreach (var card in cards)
+        {
+            if (card.cardId == uniqueId) return card;
+        }
+        return null;
     }
 
     // --- 5. YARDIMCI FONKSÝYONLAR ---

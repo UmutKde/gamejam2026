@@ -6,6 +6,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 {
     public static bool globalIsDragging = false;
     public bool isRevealed = false;
+    public bool isAnimatingCombat = false;
 
     public void RevealCard()
     {
@@ -68,10 +69,16 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     void Update()
     {
+        // EÐER SAVAÞ ANÝMASYONU VARSA BU KOD ÇALIÞMASIN, KARIÞMASIN.
+        if (isAnimatingCombat) return;
+
+        // 1. SCALE ANÝMASYONU
         transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * animSpeed);
 
+        // 2. POZÝSYON ANÝMASYONU
         if (!isLocked && canvasGroup.blocksRaycasts && !isPlayedOnBoard)
         {
+            // ... (Eski kodlar aynen kalacak) ...
             float currentX = transform.localPosition.x;
             float newY = Mathf.Lerp(transform.localPosition.y, targetY, Time.deltaTime * animSpeed);
             transform.localPosition = new Vector3(currentX, newY, 0);
