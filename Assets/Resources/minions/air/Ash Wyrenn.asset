@@ -16,6 +16,7 @@ MonoBehaviour:
   cardName: Ash Wyrenn
   cardImage: {fileID: -7400344542574452935, guid: a2ad134fce75a4357a65d4b446cfda4e, type: 3}
   element: 4
+  cardType: 0
   attackPoint: 9
   healthPoint: 8
   isReversed: 0

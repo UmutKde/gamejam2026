@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 495bedf5733ef47a89fd63d85424c592, type: 3}
+  m_Name: firezone
+  m_EditorClassIdentifier: Assembly-CSharp::ZoneData
+  zoneName: Firezone
+  zoneImage: {fileID: 1562288557386235040, guid: e462b2eb33cec45aeb51353d23ed247a, type: 3}
+  elementTypes: 0
+  powerfullType: 0
+  weaknessTypes: 
