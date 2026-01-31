@@ -4,8 +4,11 @@ using UnityEngine.EventSystems;
 public class DropZone : MonoBehaviour, IDropHandler
 {
     [Header("Slot Ayarlarý")]
+    public int slotIndex;
+    public int slotOwnerId;
     public bool isArenaSlot = true;
-    public bool isPlayerOneSlot = true;
+
+    public PlayerManager connectedManager;
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -17,24 +20,17 @@ public class DropZone : MonoBehaviour, IDropHandler
 
             if (isArenaSlot)
             {
-                if (TurnManager.Instance.isPlayerOneTurn && !isPlayerOneSlot)
+                if (d.ownerId != slotOwnerId)
                 {
-                    Debug.Log("Hata: Player 1, rakip alana kart koyamaz!");
+                    Debug.Log($"HATA: Player {d.ownerId}, Player {slotOwnerId} bölgesine oynayamaz!");
                     return;
                 }
 
-                if (!TurnManager.Instance.isPlayerOneTurn && isPlayerOneSlot)
-                {
-                    Debug.Log("Hata: Player 2, senin alanýna kart koyamaz!");
-                    return;
-                }
+                connectedManager.AttemptPlayCard(d.cardId, slotIndex);
             }
-
-            d.parentToReturnTo = this.transform;
-
-            if (isArenaSlot)
+            else
             {
-                d.LockAndShrink();
+                d.parentToReturnTo = this.transform;
             }
         }
     }

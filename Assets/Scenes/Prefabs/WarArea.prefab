@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6488386048856259027}
   - component: {fileID: 828033641577273802}
   m_Layer: 5
-  m_Name: OwnArea
+  m_Name: WarArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90,6 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DropZone
   isArenaSlot: 1
+  isPlayerOneSlot: 1
 --- !u!225 &828033641577273802
 CanvasGroup:
   m_ObjectHideFlags: 0

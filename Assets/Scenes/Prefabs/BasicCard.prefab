@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6953626331948511604}
   - component: {fileID: 1380531550479081926}
   m_Layer: 5
-  m_Name: OwnCard
+  m_Name: BasicCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1692924951201596939, guid: d69e5f1b164dfa44f890916b647a585d, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -101,8 +101,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 699bd6f9ab874f4439a34e1d6bcdc2a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Draggable
+  cardId: 0
+  ownerId: 0
+  isOwnedByClient: 0
+  frontSprite: {fileID: -7596199145534024300, guid: 2f6a58fecff3edd4da056346cf49592e, type: 3}
+  backSprite: {fileID: 908667957295616272, guid: 4399b7802ad1d0842815ef347a707546, type: 3}
   parentToReturnTo: {fileID: 0}
   isLocked: 0
-  belongsToPlayerOne: 1
-  cardFrontSprite: {fileID: 0}
-  cardBackSprite: {fileID: 0}
