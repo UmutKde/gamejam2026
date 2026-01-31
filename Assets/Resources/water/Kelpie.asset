@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Kelpie
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 21
   cardName: Kelpie
   cardImage: {fileID: 8276772869317240147, guid: 084fb8b9554a345b39c7fbe84328c454, type: 3}
   element: 1

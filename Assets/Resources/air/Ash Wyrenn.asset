@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Ash Wyrenn
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 10
   cardName: Ash Wyrenn
   cardImage: {fileID: -7400344542574452935, guid: a2ad134fce75a4357a65d4b446cfda4e, type: 3}
   element: 4

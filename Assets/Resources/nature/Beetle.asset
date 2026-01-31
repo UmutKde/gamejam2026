@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Beetle
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 15
   cardName: Beetle
   cardImage: {fileID: -170131892086433782, guid: cad6e2b70867b4913b376acf8f058a15, type: 3}
   element: 2

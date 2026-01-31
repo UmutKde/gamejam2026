@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Mavroot
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 18
   cardName: Mavroot
   cardImage: {fileID: -2498491957108715987, guid: 614e80ec08009411883fc11a75fb4ab9, type: 3}
   element: 2

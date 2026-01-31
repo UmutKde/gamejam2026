@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Storm
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 13
   cardName: Storm
   cardImage: {fileID: 8790241583849541845, guid: 559c7fdc09bd642b2a09e4b0fb4b8c1f, type: 3}
   element: 4

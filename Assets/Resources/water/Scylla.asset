@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Scylla
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 24
   cardName: Scylla
   cardImage: {fileID: 1323172116090581345, guid: 231b58c2c01664ea0ae50d6ce83606f3, type: 3}
   element: 1

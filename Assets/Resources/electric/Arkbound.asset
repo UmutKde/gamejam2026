@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Arkbound
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 5
   cardName: Arkbound
   cardImage: {fileID: -6062491145807571083, guid: fd9f6205fd0264237bf801b7ae42e89e, type: 3}
   element: 3

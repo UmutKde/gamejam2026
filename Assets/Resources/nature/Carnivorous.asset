@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Carnivorous
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 17
   cardName: Carnivorous
   cardImage: {fileID: -7152268743090817666, guid: 542c77d63952b42beb0a437cf5b5c9aa, type: 3}
   element: 2

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Rottitan
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 19
   cardName: Rottian
   cardImage: {fileID: 8949953169580241160, guid: 1456c82a96b9846268238f173f0730b2, type: 3}
   element: 2
