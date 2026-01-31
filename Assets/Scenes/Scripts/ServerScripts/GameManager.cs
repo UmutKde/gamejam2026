@@ -53,27 +53,25 @@ public class GameManager : MonoBehaviour
 
     void SpawnCard(int ownerId)
     {
-        // 1. Kütüphaneden RASTGELE bir kart seç
-        if (allCardsLibrary.Count == 0)
-        {
-            Debug.LogError("HATA: Kart kütüphanesi boþ! GameManager'a kart ekle.");
-            return;
-        }
+        if (allCardsLibrary.Count == 0) return;
 
         int randomIndex = Random.Range(0, allCardsLibrary.Count);
         CardData selectedRandomCard = allCardsLibrary[randomIndex];
-
-        // 2. Seçilen kartýn ID'sini pakete koy
-        // (Not: globalCardIdCounter'ý þimdilik kullanmýyoruz, çünkü kartýn kendisini seçiyoruz)
+        int uniqueInstanceId = globalCardIdCounter++;
 
         ServerCardSpawn packet = new ServerCardSpawn();
-        packet.cardId = selectedRandomCard.CardId; // Rastgele seçilen kartýn ID'si
+        packet.uniqueId = uniqueInstanceId;
+        packet.cardDataId = selectedRandomCard.CardId;
         packet.ownerId = ownerId;
 
         string json = JsonUtility.ToJson(packet);
 
+        // --- DÜZELTME BURADA ---
+        // Sadece P1'e gönderiyoruz. O zaten iki eli de görüyor ve yönetiyor.
         if (p1Network) p1Network.OnPacketReceived(json);
-        if (p2Network) p2Network.OnPacketReceived(json);
+
+        // Bu satýrý YORUM SATIRI yapýyoruz veya siliyoruz.
+        // if (p2Network) p2Network.OnPacketReceived(json); 
     }
 
     public void ReceivePacketFromClient(string json)

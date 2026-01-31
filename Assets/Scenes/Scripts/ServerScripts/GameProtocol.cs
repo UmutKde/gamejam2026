@@ -11,7 +11,8 @@ public class PlayerAction
 public class ServerCardSpawn
 {
     public string type = "SpawnCard";
-    public int cardId;
+    public int uniqueId;
+    public int cardDataId;
     public int ownerId;
 }
 

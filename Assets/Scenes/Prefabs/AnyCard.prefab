@@ -165,6 +165,9 @@ GameObject:
   - component: {fileID: 7280422196822627636}
   - component: {fileID: 2132282411720155554}
   - component: {fileID: 8091201845020168445}
+  - component: {fileID: -5882472302345910297}
+  - component: {fileID: -4184737757975692347}
+  - component: {fileID: 8816532730715759041}
   m_Layer: 5
   m_Name: AnyCard
   m_TagString: Untagged
@@ -255,6 +258,71 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &-5882472302345910297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3778660366398121944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 699bd6f9ab874f4439a34e1d6bcdc2a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Draggable
+  cardId: 0
+  ownerId: 0
+  isOwnedByClient: 0
+  isPlayedOnBoard: 0
+  hoverScaleAmount: 1.3
+  dragScaleAmount: 1.1
+  playedScaleAmount: 0.7
+  normalScaleAmount: 1
+  animSpeed: 15
+  parentToReturnTo: {fileID: 0}
+  isLocked: 0
+--- !u!225 &-4184737757975692347
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3778660366398121944}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &8816532730715759041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3778660366398121944}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fca18f68e4aa4d4895c3eac4a42ff21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MinionCardDisplay
+  cardData: {fileID: 0}
+  nameText: {fileID: 2252329887352273083}
+  attackText: {fileID: 7871349505934707240}
+  healthText: {fileID: 4122441654044071823}
+  minionImage: {fileID: 3609565972948941424}
+  elementIconImage: {fileID: 4161681505859361978}
+  cardBackObject: {fileID: 5861659278479133359}
+  elementIcons:
+  - type: 0
+    icon: {fileID: 8334651344603559088, guid: 8917a9837150f428a8d625e6cef693a1, type: 3}
+  - type: 3
+    icon: {fileID: 5820286478268577726, guid: e41ce4e83cef648d69d5b2bca7e75394, type: 3}
+  - type: 4
+    icon: {fileID: 4311277859609562655, guid: d45249e396dc64d33800fd6600af3062, type: 3}
+  - type: 2
+    icon: {fileID: -7947462409902495443, guid: 2e8f09c1e8c43480288a8ea507e06500, type: 3}
+  - type: 1
+    icon: {fileID: 8509550459451208454, guid: 0fad3df67066c4898a7b89acbd858b2d, type: 3}
 --- !u!1 &4748064523004138494
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,7 +548,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fca18f68e4aa4d4895c3eac4a42ff21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinionCardDisplay
-  cardData: {fileID: 11400000, guid: a064614aad96445fd8cfb778a8b2bf35, type: 2}
+  cardData: {fileID: 0}
   nameText: {fileID: 2252329887352273083}
   attackText: {fileID: 7871349505934707240}
   healthText: {fileID: 4122441654044071823}

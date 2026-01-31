@@ -55,34 +55,42 @@ public class PlayerManager : MonoBehaviour
 
     void SpawnVisualCard(ServerCardSpawn data)
     {
-        // Zaten varsa tekrar oluþturma
-        if (FindCardById(data.cardId) != null) return;
+        // Kontrolü artýk Unique ID üzerinden yapýyoruz.
+        // Böylece 2 tane Ejderha (ID: 5) gelse bile, Unique ID'leri farklý (100 ve 101) olacaðý için sorun çýkmaz.
+        if (FindCardById(data.uniqueId) != null) return;
 
         Transform targetParent = (data.ownerId == myPlayerId) ? myHandTransform : enemyHandTransform;
 
-        // 1. BOÞ PREFABI OLUÞTUR
         GameObject newCard = Instantiate(commonCardPrefab, targetParent);
 
-        // 2. DATAYI GAME MANAGER'DAN ÇEK
-        CardData cardData = GameManager.Instance.GetCardDataByID(data.cardId);
+        newCard.transform.localScale = Vector3.one;
 
-        // 3. GÖRSELÝ DOLDUR (Arkadaþýnýn Scripti)
+        // 2. Pozisyonu yerel olarak sýfýrla (Z ekseni kaymasýn)
+        newCard.transform.localPosition = Vector3.zero;
+
+        // 3. Dönüþü sýfýrla
+        newCard.transform.localRotation = Quaternion.identity;
+
+        // --- 1. GÖRSELÝ AYARLA (Data ID Kullanarak) ---
+        // GameManager'dan "Ejderha" verisini çek
+        CardData cardData = GameManager.Instance.GetCardDataByID(data.cardDataId);
+
         MinionCardDisplay display = newCard.GetComponent<MinionCardDisplay>();
         if (display != null && cardData != null)
         {
-            // Ýþte o "sürükle býrak" iþlemini kodla yapýyoruz:
             display.Setup(cardData);
         }
 
-        // 4. DRAGGABLE AYARLARI
+        // --- 2. MEKANÝÐÝ AYARLA (Unique ID Kullanarak) ---
         Draggable draggable = newCard.GetComponent<Draggable>();
         if (draggable != null)
         {
-            draggable.InitializeCard(data.cardId, data.ownerId);
+            // Kartýn ID'si artýk Unique ID oldu.
+            draggable.InitializeCard(data.uniqueId, data.ownerId);
             draggable.isOwnedByClient = (data.ownerId == myPlayerId);
         }
 
-        newCard.name = $"Card_{data.cardId}_P{data.ownerId}";
+        newCard.name = $"Card_{data.uniqueId}_(Type_{data.cardDataId})";
     }
 
     void SyncBoard(GameState state)
