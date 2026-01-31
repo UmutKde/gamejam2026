@@ -1,0 +1,28 @@
+using UnityEngine;
+
+// Element türlerini burada tanımlıyoruz
+public enum ElementTypes
+{
+    Fire,       // Ateş
+    Water,      // Su
+    Nature,     // Doğa
+    Electric,   // Elektrik
+    Air         // Hava
+}
+
+[CreateAssetMenu(fileName = "New Minion", menuName = "GameJam/Minion Card")]
+public class CardData : ScriptableObject
+{
+    [Header("Temel Bilgiler")]
+    public string cardName;         // Kartın İsmi (Örn: Magma Golem)
+    public Sprite cardImage;        // Minyonun Resmi
+    public ElementTypes element;    // Element Türü
+
+    [Header("Değerler")]
+    public int attackPoint;         // Saldırı Gücü
+    public int healthPoint;         // Can Değeri
+
+    [Header("Oyun İçi Durumlar")]
+    public bool isReversed;         // Ters mi? (Mekanik için)
+    public bool whoPlayed;          // Kim oynadı? (Oyuncu/Rakip)
+}
