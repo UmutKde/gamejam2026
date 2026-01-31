@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -11,6 +12,19 @@ public class GameManager : MonoBehaviour
     [Header("Oyun Durumu")]
     public GameState currentState;
     private int globalCardIdCounter = 0;
+
+    [Header("KART KÜTÜPHANESÝ")]
+    public List<CardData> allCardsLibrary;
+
+    public CardData GetCardDataByID(int requestedId)
+    {
+        foreach (var data in allCardsLibrary)
+        {
+            if (data.CardId == requestedId) return data;
+        }
+        Debug.LogError($"HATA: ID {requestedId} kütüphanede bulunamadý!");
+        return null;
+    }
 
     void Awake()
     {
@@ -39,10 +53,21 @@ public class GameManager : MonoBehaviour
 
     void SpawnCard(int ownerId)
     {
-        int newId = globalCardIdCounter++;
+        // 1. Kütüphaneden RASTGELE bir kart seç
+        if (allCardsLibrary.Count == 0)
+        {
+            Debug.LogError("HATA: Kart kütüphanesi boþ! GameManager'a kart ekle.");
+            return;
+        }
+
+        int randomIndex = Random.Range(0, allCardsLibrary.Count);
+        CardData selectedRandomCard = allCardsLibrary[randomIndex];
+
+        // 2. Seçilen kartýn ID'sini pakete koy
+        // (Not: globalCardIdCounter'ý þimdilik kullanmýyoruz, çünkü kartýn kendisini seçiyoruz)
 
         ServerCardSpawn packet = new ServerCardSpawn();
-        packet.cardId = newId;
+        packet.cardId = selectedRandomCard.CardId; // Rastgele seçilen kartýn ID'si
         packet.ownerId = ownerId;
 
         string json = JsonUtility.ToJson(packet);

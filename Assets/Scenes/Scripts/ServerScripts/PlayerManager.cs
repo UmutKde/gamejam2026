@@ -55,22 +55,33 @@ public class PlayerManager : MonoBehaviour
 
     void SpawnVisualCard(ServerCardSpawn data)
     {
+        // Zaten varsa tekrar oluþturma
         if (FindCardById(data.cardId) != null) return;
 
-        Transform targetParent;
-        bool isMine = (data.ownerId == myPlayerId);
+        Transform targetParent = (data.ownerId == myPlayerId) ? myHandTransform : enemyHandTransform;
 
-        if (isMine) targetParent = myHandTransform;
-        else targetParent = enemyHandTransform;
-
+        // 1. BOÞ PREFABI OLUÞTUR
         GameObject newCard = Instantiate(commonCardPrefab, targetParent);
-        Draggable cardScript = newCard.GetComponent<Draggable>();
 
-        if (cardScript != null)
+        // 2. DATAYI GAME MANAGER'DAN ÇEK
+        CardData cardData = GameManager.Instance.GetCardDataByID(data.cardId);
+
+        // 3. GÖRSELÝ DOLDUR (Arkadaþýnýn Scripti)
+        MinionCardDisplay display = newCard.GetComponent<MinionCardDisplay>();
+        if (display != null && cardData != null)
         {
-            cardScript.InitializeCard(data.cardId, data.ownerId);
-            cardScript.isOwnedByClient = isMine;
+            // Ýþte o "sürükle býrak" iþlemini kodla yapýyoruz:
+            display.Setup(cardData);
         }
+
+        // 4. DRAGGABLE AYARLARI
+        Draggable draggable = newCard.GetComponent<Draggable>();
+        if (draggable != null)
+        {
+            draggable.InitializeCard(data.cardId, data.ownerId);
+            draggable.isOwnedByClient = (data.ownerId == myPlayerId);
+        }
+
         newCard.name = $"Card_{data.cardId}_P{data.ownerId}";
     }
 

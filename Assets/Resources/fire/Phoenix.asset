@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Phoenix
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 3
   cardName: Phoenix
   cardImage: {fileID: -2554913593723263831, guid: 3a498b411bfda4b8a8f06fc788400323, type: 3}
   element: 0

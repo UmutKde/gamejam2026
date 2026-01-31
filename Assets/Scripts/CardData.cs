@@ -14,6 +14,7 @@ public enum ElementTypes
 public class CardData : ScriptableObject
 {
     [Header("Temel Bilgiler")]
+    public int CardId;
     public string cardName;         // Kartın İsmi (Örn: Magma Golem)
     public Sprite cardImage;        // Minyonun Resmi
     public ElementTypes element;    // Element Türü
