@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
-  m_Name: phoenix
+  m_Name: Magma Golem
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: 
-  cardImage: {fileID: 0}
+  cardName: Magma Golem
+  cardImage: {fileID: 4415955047244069884, guid: 8d3d769c907b24f4a94ca3d2282da3e8, type: 3}
   element: 0
-  attackPoint: 0
-  healthPoint: 0
+  attackPoint: 4
+  healthPoint: 3
   isReversed: 0
   whoPlayed: 0
