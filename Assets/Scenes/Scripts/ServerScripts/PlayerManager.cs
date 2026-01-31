@@ -101,7 +101,7 @@ public class PlayerManager : MonoBehaviour
 
     Draggable FindCardById(int id)
     {
-        Draggable[] allCards = FindObjectsOfType<Draggable>();
+        Draggable[] allCards = FindObjectsByType<Draggable>(FindObjectsSortMode.None);
         foreach (Draggable c in allCards) if (c.cardId == id) return c;
         return null;
     }

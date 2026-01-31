@@ -48,8 +48,7 @@ public class TurnManager : MonoBehaviour
         if (wasP1 != isPlayerOneTurn)
         {
             Debug.Log($"TurnManager: Sunucu sýrayý Player {turnOwnerId} olarak güncelledi.");
-
-            Draggable[] allCards = FindObjectsOfType<Draggable>();
+            Draggable[] allCards = FindObjectsByType<Draggable>(FindObjectsSortMode.None);
             foreach (Draggable card in allCards)
             {
                 card.UpdateCardVisualsAndState();

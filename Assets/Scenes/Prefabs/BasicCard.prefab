@@ -104,7 +104,13 @@ MonoBehaviour:
   cardId: 0
   ownerId: 0
   isOwnedByClient: 0
+  isPlayedOnBoard: 0
   frontSprite: {fileID: -7596199145534024300, guid: 2f6a58fecff3edd4da056346cf49592e, type: 3}
   backSprite: {fileID: 908667957295616272, guid: 4399b7802ad1d0842815ef347a707546, type: 3}
+  hoverScaleAmount: 1.3
+  dragScaleAmount: 1.1
+  playedScaleAmount: 0.7
+  normalScaleAmount: 1
+  animSpeed: 15
   parentToReturnTo: {fileID: 0}
   isLocked: 0
