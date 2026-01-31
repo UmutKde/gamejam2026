@@ -28,16 +28,8 @@ public class TurnManager : MonoBehaviour
 
     public void OnEndTurnClicked()
     {
-        if (isPlayerOneTurn)
-        {
-            Debug.Log("Butona basýldý: P1 Turu Bitirmek Ýstiyor...");
-            p1Manager.AttemptEndTurn();
-        }
-        else
-        {
-            Debug.Log("Butona basýldý: P2 Turu Bitirmek Ýstiyor...");
-            p2Manager.AttemptEndTurn();
-        }
+        int playerId = isPlayerOneTurn ? 1 : 2;
+        GameLogic.Instance.OnPlayerAction(playerId, "Pass");
     }
 
     public void UpdateTurnFromServer(int turnOwnerId)

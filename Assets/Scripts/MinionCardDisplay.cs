@@ -87,4 +87,12 @@ public class MinionCardDisplay : MonoBehaviour
             cardBackObject.SetActive(isFaceDown);
         }
     }
+    // Anlık can değişimi için harici fonksiyon
+    public void UpdateHealthUI(int currentHealth)
+    {
+        if (healthText != null)
+        {
+            healthText.text = currentHealth.ToString();
+        }
+    }
 }

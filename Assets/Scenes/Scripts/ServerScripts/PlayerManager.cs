@@ -15,12 +15,64 @@ public class PlayerManager : MonoBehaviour
     public List<Transform> myBoardSlots;
     public List<Transform> enemyBoardSlots;
 
-    public void AttemptPlayCard(int cardId, int slotIndex)
+    // --- YENÝ FONKSÝYON: Slot Ýndeksi Bulucu ---
+    public int GetSlotIndex(GameObject hitObject)
     {
+        // 1. Direkt slot objesine mi býraktýk?
+        for (int i = 0; i < myBoardSlots.Count; i++)
+        {
+            if (myBoardSlots[i].gameObject == hitObject) return i;
+        }
+
+        // 2. Belki slotun içindeki bir resme veya çocuðuna býraktýk?
+        if (hitObject.transform.parent != null)
+        {
+            for (int i = 0; i < myBoardSlots.Count; i++)
+            {
+                if (myBoardSlots[i] == hitObject.transform.parent) return i;
+            }
+        }
+
+        return -1; // Slot bulunamadý
+    }
+
+    // Parametre olarak artýk Kartýn kendisini de (Draggable card) alýyoruz
+    public void AttemptPlayCard(Draggable card, int rawSlotIndex)
+    {
+        // 1. MATEMATÝKSEL DÖNÜÞÜM
+        int targetLaneIndex = rawSlotIndex % 5;
+
+        // 2. SUNUCU MANTIK KONTROLÜ (Bölge Sýrasý)
+        if (!GameLogic.Instance.CanPlayCard(targetLaneIndex))
+        {
+            Debug.LogWarning("Sýra bu bölgede deðil!");
+            return;
+        }
+
+        // 3. DOLULUK KONTROLÜ (Lock Mantýðý)
+        // Hedef slotu buluyoruz
+        Transform targetSlot = myBoardSlots[targetLaneIndex];
+
+        // Eðer slotta zaten bir kart (child) varsa OYNAYAMAZSIN.
+        if (targetSlot.childCount > 0)
+        {
+            Debug.LogWarning("Bu slot zaten dolu!");
+            // Kartý eline geri gönder (Draggable OnEndDrag bunu halleder)
+            return;
+        }
+
+        // --- 4. ANLIK GÖRSEL GÜNCELLEME (Client-Side Prediction) ---
+        // Sunucudan cevap beklemeden kartý hemen oraya oturt!
+        card.MoveToSlot(targetSlot);
+
+        // Ses efekti varsa burada çaldýrabilirsin.
+        // -----------------------------------------------------------
+
+        // 5. SUNUCUYA BÝLDÝR
         PlayerAction action = new PlayerAction();
         action.actionType = "PlayCard";
-        action.cardId = cardId;
-        action.slotIndex = slotIndex;
+        action.cardId = card.cardId;
+        action.slotIndex = targetLaneIndex;
         action.playerId = myPlayerId;
         network.SendPacket(JsonUtility.ToJson(action));
     }
@@ -55,37 +107,28 @@ public class PlayerManager : MonoBehaviour
 
     void SpawnVisualCard(ServerCardSpawn data)
     {
-        // Kontrolü artýk Unique ID üzerinden yapýyoruz.
-        // Böylece 2 tane Ejderha (ID: 5) gelse bile, Unique ID'leri farklý (100 ve 101) olacaðý için sorun çýkmaz.
         if (FindCardById(data.uniqueId) != null) return;
 
         Transform targetParent = (data.ownerId == myPlayerId) ? myHandTransform : enemyHandTransform;
-
         GameObject newCard = Instantiate(commonCardPrefab, targetParent);
 
+        // Görünmezlik sorununu çözen ayarlar
         newCard.transform.localScale = Vector3.one;
-
-        // 2. Pozisyonu yerel olarak sýfýrla (Z ekseni kaymasýn)
         newCard.transform.localPosition = Vector3.zero;
-
-        // 3. Dönüþü sýfýrla
         newCard.transform.localRotation = Quaternion.identity;
 
-        // --- 1. GÖRSELÝ AYARLA (Data ID Kullanarak) ---
-        // GameManager'dan "Ejderha" verisini çek
+        // Görsel Ayarla
         CardData cardData = GameManager.Instance.GetCardDataByID(data.cardDataId);
-
         MinionCardDisplay display = newCard.GetComponent<MinionCardDisplay>();
         if (display != null && cardData != null)
         {
             display.Setup(cardData);
         }
 
-        // --- 2. MEKANÝÐÝ AYARLA (Unique ID Kullanarak) ---
+        // Draggable Ayarla
         Draggable draggable = newCard.GetComponent<Draggable>();
         if (draggable != null)
         {
-            // Kartýn ID'si artýk Unique ID oldu.
             draggable.InitializeCard(data.uniqueId, data.ownerId);
             draggable.isOwnedByClient = (data.ownerId == myPlayerId);
         }
@@ -106,14 +149,52 @@ public class PlayerManager : MonoBehaviour
     {
         for (int i = 0; i < 5; i++)
         {
-            int cardId = slotData[i];
-            if (cardId != -1)
+            Transform slot = physicalSlots[i];
+            int serverCardId = slotData[i]; // Sunucudaki durum (-1 veya UniqueID)
+
+            // --- 1. ÖLÜM KONTROLÜ (GÖRSEL SÝLME) ---
+            // Eðer sunucuda slot boþsa (-1) ama sahnede o slotta bir kart varsa -> YOK ET
+            if (serverCardId == -1)
             {
-                Draggable card = FindCardById(cardId);
-                if (card != null && card.transform.parent != physicalSlots[i])
+                if (slot.childCount > 0)
                 {
-                    card.MoveToSlot(physicalSlots[i]);
+                    foreach (Transform child in slot)
+                    {
+                        Destroy(child.gameObject); // Görseli yok et
+                    }
                 }
+                continue; // Bu slot bitti, diðerine geç
+            }
+
+            // --- 2. HAREKET VE GÜNCELLEME ---
+            // Sunucuda kart var. Sahnedeki kartý bul veya yerine oturt.
+            Draggable card = FindCardById(serverCardId);
+
+            if (card != null)
+            {
+                // A. Kart yanlýþ yerdeyse (eldeyse veya baþka slottaysa) yerine taþý
+                if (card.transform.parent != slot)
+                {
+                    card.MoveToSlot(slot);
+                }
+
+                // B. CAN DEÐERÝNÝ GÜNCELLE
+                // GameLogic'ten canlý veriyi çek
+                int currentHealth = GameLogic.Instance.GetLiveHealth(serverCardId);
+
+                // Görsel scriptine ulaþ ve yazýyý deðiþtir
+                var display = card.GetComponent<MinionCardDisplay>();
+                if (display != null)
+                {
+                    display.UpdateHealthUI(currentHealth);
+                }
+
+                // C. KARTI AÇ (REVEAL) - KRÝTÝK NOKTA!
+                // Savaþ güncellemesi geldiyse veya kart artýk bir slota oturduysa,
+                // kartýn "Açýklanmýþ" (Revealed) olduðunu iþaretliyoruz.
+                // Bu sayede Draggable içindeki UpdateCardVisualsAndState fonksiyonu,
+                // rakip kart olsa bile onu FaceUp (Açýk) hale getirecek.
+                card.RevealCard();
             }
         }
     }

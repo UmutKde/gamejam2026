@@ -2463,6 +2463,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1816300879}
   - component: {fileID: 1816300878}
+  - component: {fileID: 1816300880}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -2486,8 +2487,8 @@ MonoBehaviour:
   p2Network: {fileID: 1713298697}
   currentState:
     turnOwnerId: 0
-    p1Slots: 0000000000000000000000000000000000000000
-    p2Slots: 0000000000000000000000000000000000000000
+    p1Slots: 0500000006000000070000000800000009000000
+    p2Slots: 0000000001000000020000000300000004000000
   allCardsLibrary:
   - {fileID: 11400000, guid: ada63973a83854fa4b10eb9b43c03145, type: 2}
   - {fileID: 11400000, guid: 61c0e34e7a79143ef91ff099d90a8151, type: 2}
@@ -2529,6 +2530,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 531065985}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1816300880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1816300877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 809bc419a73b5704e950d951ed371339, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameLogic
+  activeLaneIndex: 0
+  p1VictoryScore: 0
+  p2VictoryScore: 0
 --- !u!1 &1916464336
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,6 +12,7 @@ public class DropZone : MonoBehaviour, IDropHandler
 
     public void OnDrop(PointerEventData eventData)
     {
+        /*
         Draggable d = eventData.pointerDrag.GetComponent<Draggable>();
 
         if (d != null)
@@ -33,5 +34,6 @@ public class DropZone : MonoBehaviour, IDropHandler
                 d.parentToReturnTo = this.transform;
             }
         }
+        */
     }
 }
