@@ -375,6 +375,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
   m_PrefabInstance: {fileID: 1505569105}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &61499474 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 183658798549651019, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
+  m_PrefabInstance: {fileID: 1505569105}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24ca058077adda14f809085bf6396aef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LaneStatusDisplay
 --- !u!1 &84546986
 GameObject:
   m_ObjectHideFlags: 0
@@ -851,6 +862,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
   m_PrefabInstance: {fileID: 1607603659}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &862791887 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 183658798549651019, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
+  m_PrefabInstance: {fileID: 1607603659}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24ca058077adda14f809085bf6396aef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LaneStatusDisplay
 --- !u!1001 &884954117
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1088,11 +1110,33 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
   m_PrefabInstance: {fileID: 7387317580916495825}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &995834927 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 183658798549651019, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
+  m_PrefabInstance: {fileID: 7387317580916495825}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24ca058077adda14f809085bf6396aef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LaneStatusDisplay
 --- !u!224 &1010346247 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
   m_PrefabInstance: {fileID: 1133479007}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1010346248 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 183658798549651019, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
+  m_PrefabInstance: {fileID: 1133479007}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24ca058077adda14f809085bf6396aef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LaneStatusDisplay
 --- !u!1 &1062470609
 GameObject:
   m_ObjectHideFlags: 0
@@ -1289,11 +1333,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1680,11 +1724,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2067,8 +2111,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1402938538}
-  - component: {fileID: 1402938539}
   - component: {fileID: 1402938540}
+  - component: {fileID: 1402938541}
   m_Layer: 5
   m_Name: LaneOverlays
   m_TagString: Untagged
@@ -2100,32 +2144,6 @@ RectTransform:
   m_AnchoredPosition: {x: 80, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1402938539
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1402938537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: 10
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!114 &1402938540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2139,11 +2157,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LaneVisualManager
   laneDisplays:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 995834927}
+  - {fileID: 1010346248}
+  - {fileID: 61499474}
+  - {fileID: 862791887}
+  - {fileID: 2086536898}
+--- !u!114 &1402938541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402938537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 250, y: 510}
+  m_Spacing: {x: 10, y: 10}
+  m_Constraint: 1
+  m_ConstraintCount: 5
 --- !u!1 &1449934139
 GameObject:
   m_ObjectHideFlags: 0
@@ -2279,11 +2321,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2702,11 +2744,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3424,6 +3466,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
   m_PrefabInstance: {fileID: 1255060490}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2086536898 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 183658798549651019, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
+  m_PrefabInstance: {fileID: 1255060490}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24ca058077adda14f809085bf6396aef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LaneStatusDisplay
 --- !u!1001 &7387317580916495825
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3432,6 +3485,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1402938538}
     m_Modifications:
+    - target: {fileID: 1304911304612877357, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3458,11 +3515,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6915103442022588355, guid: 5c81b814465019843bf0fec5c41649ec, type: 3}
       propertyPath: m_LocalPosition.x

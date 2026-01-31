@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 510, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &989244741785220658
 CanvasRenderer:
@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -88,6 +88,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24ca058077adda14f809085bf6396aef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LaneStatusDisplay
-  activeBorderObj: {fileID: 0}
-  lockOverlayObj: {fileID: 0}
-  finishedOverlayObj: {fileID: 0}
+  backgroundRenderer: {fileID: 1304911304612877357}
+  iconRenderer: {fileID: 0}
+  activeBorderSprite: {fileID: 9074462126035118095, guid: 6dab61f0de731d84887993af5021d8a2, type: 3}
+  activeColor: {r: 1, g: 1, b: 1, a: 1}
+  lockedPanelSprite: {fileID: 0}
+  lockIconSprite: {fileID: 0}
+  lockedColor: {r: 0, g: 0, b: 0, a: 0.7}
+  finishedPanelSprite: {fileID: 0}
+  finishedIconSprite: {fileID: 0}
+  finishedColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
