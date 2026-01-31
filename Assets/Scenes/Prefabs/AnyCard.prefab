@@ -275,6 +275,7 @@ MonoBehaviour:
   isOwnedByClient: 0
   isPlayedOnBoard: 0
   hoverScaleAmount: 1.3
+  hoverHeightAmount: 80
   dragScaleAmount: 1.1
   playedScaleAmount: 0.7
   normalScaleAmount: 1
