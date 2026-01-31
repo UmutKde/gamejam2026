@@ -377,6 +377,7 @@ GameObject:
   - component: {fileID: 84546989}
   - component: {fileID: 84546988}
   - component: {fileID: 84546987}
+  - component: {fileID: 84546990}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -458,6 +459,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &84546990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 84546986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 1
+  m_Antialiasing: 1
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &234533102
 GameObject:
   m_ObjectHideFlags: 0
@@ -2273,7 +2318,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
   myPlayerId: 2
   network: {fileID: 1713298697}
-  commonCardPrefab: {fileID: 7017807141921433650, guid: f1ad63de432d1bb46a99d1a18c8a213a, type: 3}
+  commonCardPrefab: {fileID: 3778660366398121944, guid: 960f45f0f9ed6f240977f8f0e21d5509, type: 3}
   myHandTransform: {fileID: 1195852365}
   enemyHandTransform: {fileID: 1449934140}
   myBoardSlots:
@@ -2323,6 +2368,32 @@ MonoBehaviour:
     turnOwnerId: 0
     p1Slots: 0000000000000000000000000000000000000000
     p2Slots: 0000000000000000000000000000000000000000
+  allCardsLibrary:
+  - {fileID: 11400000, guid: ada63973a83854fa4b10eb9b43c03145, type: 2}
+  - {fileID: 11400000, guid: 61c0e34e7a79143ef91ff099d90a8151, type: 2}
+  - {fileID: 11400000, guid: 675b4d5bb64bc4bfdb1c6e2a7856b059, type: 2}
+  - {fileID: 11400000, guid: 1f929e792696642cbb82af3ccf7fd538, type: 2}
+  - {fileID: 11400000, guid: a064614aad96445fd8cfb778a8b2bf35, type: 2}
+  - {fileID: 11400000, guid: 5f5e3d048011c4f52b26d37b78b58538, type: 2}
+  - {fileID: 11400000, guid: 750b53294c1614ba8992444666f8dbf1, type: 2}
+  - {fileID: 11400000, guid: 97bc8a72e21c54f689ee304e2530032d, type: 2}
+  - {fileID: 11400000, guid: 9d57580d67bde4da28581ec040937402, type: 2}
+  - {fileID: 11400000, guid: 704ab3a6b47f34406b9dd5ac6ffa1370, type: 2}
+  - {fileID: 11400000, guid: 0ddc974027cf44602a1eba7f10a03d00, type: 2}
+  - {fileID: 11400000, guid: 65258bc25d34547c0be3782686a1e4f8, type: 2}
+  - {fileID: 11400000, guid: 43a7657ba96ca47bc97d212e7b0eafe2, type: 2}
+  - {fileID: 11400000, guid: acb9bf349c9364210a65e4feedacc4c2, type: 2}
+  - {fileID: 11400000, guid: 7cb8685792a5945aab43314fee44fc8f, type: 2}
+  - {fileID: 11400000, guid: b9de1ab818c2e4083ad33c8415c59b60, type: 2}
+  - {fileID: 11400000, guid: ade017489807e457d9e6252ef74dde00, type: 2}
+  - {fileID: 11400000, guid: 1b37d9dcf0fc346cdb9efff80f431f7a, type: 2}
+  - {fileID: 11400000, guid: 56ee942e3fa344a3ea22407afdbe8f7b, type: 2}
+  - {fileID: 11400000, guid: 13230424ba64f4d2298504c27d85cdea, type: 2}
+  - {fileID: 11400000, guid: 907c5ee927b7b427d9a36080721fa6d6, type: 2}
+  - {fileID: 11400000, guid: 45174a8f5651d44938dfadbedf108de5, type: 2}
+  - {fileID: 11400000, guid: 345c681385cb140c184cf056a1907681, type: 2}
+  - {fileID: 11400000, guid: 451ee6aaddeb04b63afab22644736c40, type: 2}
+  - {fileID: 11400000, guid: a31c7009a509049afb2818581dee6399, type: 2}
 --- !u!4 &1816300879
 Transform:
   m_ObjectHideFlags: 0
@@ -2447,7 +2518,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
   myPlayerId: 1
   network: {fileID: 1970964293}
-  commonCardPrefab: {fileID: 7017807141921433650, guid: f1ad63de432d1bb46a99d1a18c8a213a, type: 3}
+  commonCardPrefab: {fileID: 3778660366398121944, guid: 960f45f0f9ed6f240977f8f0e21d5509, type: 3}
   myHandTransform: {fileID: 1449934140}
   enemyHandTransform: {fileID: 1195852365}
   myBoardSlots:

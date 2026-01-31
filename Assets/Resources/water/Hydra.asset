@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Hydra
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 20
   cardName: Hydra
   cardImage: {fileID: -7632321023565456736, guid: 464c1f21d93d14da5a22b2d95649bb59, type: 3}
   element: 1

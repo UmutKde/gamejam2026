@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Blighted Omen
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 16
   cardName: Blighted Omen
   cardImage: {fileID: 8199319806484806524, guid: 3142053e77fc64353ad0f4d5adef66a3, type: 3}
   element: 2

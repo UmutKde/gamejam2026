@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -11,6 +12,19 @@ public class GameManager : MonoBehaviour
     [Header("Oyun Durumu")]
     public GameState currentState;
     private int globalCardIdCounter = 0;
+
+    [Header("KART KÜTÜPHANESÝ")]
+    public List<CardData> allCardsLibrary;
+
+    public CardData GetCardDataByID(int requestedId)
+    {
+        foreach (var data in allCardsLibrary)
+        {
+            if (data.CardId == requestedId) return data;
+        }
+        Debug.LogError($"HATA: ID {requestedId} kütüphanede bulunamadý!");
+        return null;
+    }
 
     void Awake()
     {
@@ -39,16 +53,25 @@ public class GameManager : MonoBehaviour
 
     void SpawnCard(int ownerId)
     {
-        int newId = globalCardIdCounter++;
+        if (allCardsLibrary.Count == 0) return;
+
+        int randomIndex = Random.Range(0, allCardsLibrary.Count);
+        CardData selectedRandomCard = allCardsLibrary[randomIndex];
+        int uniqueInstanceId = globalCardIdCounter++;
 
         ServerCardSpawn packet = new ServerCardSpawn();
-        packet.cardId = newId;
+        packet.uniqueId = uniqueInstanceId;
+        packet.cardDataId = selectedRandomCard.CardId;
         packet.ownerId = ownerId;
 
         string json = JsonUtility.ToJson(packet);
 
+        // --- DÜZELTME BURADA ---
+        // Sadece P1'e gönderiyoruz. O zaten iki eli de görüyor ve yönetiyor.
         if (p1Network) p1Network.OnPacketReceived(json);
-        if (p2Network) p2Network.OnPacketReceived(json);
+
+        // Bu satýrý YORUM SATIRI yapýyoruz veya siliyoruz.
+        // if (p2Network) p2Network.OnPacketReceived(json); 
     }
 
     public void ReceivePacketFromClient(string json)

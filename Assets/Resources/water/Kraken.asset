@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: Kraken
   m_EditorClassIdentifier: Assembly-CSharp::CardData
+  CardId: 22
   cardName: Kraken
   cardImage: {fileID: 2234748924019723986, guid: a536b83ff8bb8432baa3a2a721ed36a0, type: 3}
   element: 1
