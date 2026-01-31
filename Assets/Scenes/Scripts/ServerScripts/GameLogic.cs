@@ -125,10 +125,12 @@ public class GameLogic : MonoBehaviour
 
     // --- 4. SAVAÞ MEKANÝÐÝ (CORE) ---
     // --- 4. SAVAÞ MEKANÝÐÝ (CORE - COROUTINE) ---
+    // --- 4. SAVAÞ MEKANÝÐÝ (GÜNCEL - ELEMENT DESTEKLÝ) ---
     IEnumerator ResolveCombatCoroutine()
     {
         Debug.Log($"--- {activeLaneIndex}. BÖLGE SAVAÞI BAÞLADI ---");
 
+        // 1. Mevcut Slotlardaki Kart ID'lerini al
         int p1CardUniqueId = GameManager.Instance.currentState.p1Slots[activeLaneIndex];
         int p2CardUniqueId = GameManager.Instance.currentState.p2Slots[activeLaneIndex];
 
@@ -137,11 +139,11 @@ public class GameLogic : MonoBehaviour
         Draggable p1Draggable = null;
         Draggable p2Draggable = null;
 
-        // ÖN HESAPLAMA DEÐÝÞKENLERÝ
+        // "Ölecek mi?" bayraklarý
         bool p1WillDie = false;
         bool p2WillDie = false;
 
-        // 1. Verileri Topla
+        // --- VERÝLERÝ TOPLA ---
         if (p1CardUniqueId != -1)
         {
             p1Data = GameManager.Instance.GetCardDataByUniqueId(p1CardUniqueId);
@@ -153,62 +155,92 @@ public class GameLogic : MonoBehaviour
             p2Draggable = FindDraggableByUniqueId(p2CardUniqueId);
         }
 
-        // 2. Ölecekleri Önceden Hesapla (Animasyona haber vermek için)
+        // --- SAVAÞ HESAPLAMALARI ---
+        // Eðer iki tarafta da kart varsa savaþtýr
         if (p1Data != null && p2Data != null)
         {
-            int p1TempHp = liveCardHealths[p1CardUniqueId] - p2Data.attackPoint;
-            int p2TempHp = liveCardHealths[p2CardUniqueId] - p1Data.attackPoint;
+            // A. ELEMENT HASARLARINI HESAPLA
+            // P1 saldýrýyor -> P2 savunuyor
+            var p1AttackResult = ElementLogic.CalculateDamage(p1Data.attackPoint, p1Data.element, p2Data.element);
+
+            // P2 saldýrýyor -> P1 savunuyor
+            var p2AttackResult = ElementLogic.CalculateDamage(p2Data.attackPoint, p2Data.element, p1Data.element);
+
+            // Loglarda görelim (Debug için)
+            Debug.Log($"P1 ({p1Data.element}) vurdu: {p1AttackResult.finalDamage} Hasar ({p1AttackResult.interactionType})");
+            Debug.Log($"P2 ({p2Data.element}) vurdu: {p2AttackResult.finalDamage} Hasar ({p2AttackResult.interactionType})");
+
+            // B. ÖLÜM TAHMÝNÝ (Animasyon için)
+            // Mevcut canlardan hesaplanan hasarý çýkarýp kontrol ediyoruz
+            int p1TempHp = liveCardHealths[p1CardUniqueId] - p2AttackResult.finalDamage;
+            int p2TempHp = liveCardHealths[p2CardUniqueId] - p1AttackResult.finalDamage;
 
             if (p1TempHp <= 0) p1WillDie = true;
             if (p2TempHp <= 0) p2WillDie = true;
-        }
 
-        // 3. ANÝMASYONU BAÞLAT
-        if (p1Draggable != null && p2Draggable != null)
-        {
-            p1Draggable.RevealCard();
-            p2Draggable.RevealCard();
+            // C. ANÝMASYONU OYNAT
+            if (p1Draggable != null && p2Draggable != null)
+            {
+                p1Draggable.RevealCard();
+                p2Draggable.RevealCard();
 
-            // Buradaki parametreler ile "Vurulduðu an yok ol" emrini veriyoruz
-            yield return CombatVisualManager.Instance.StartClashAnimation(p1Draggable, p2Draggable, p1WillDie, p2WillDie);
-        }
-        else
-        {
-            yield return new WaitForSeconds(0.5f);
-        }
+                // Animasyon yöneticisine kimin öleceðini söyleyerek baþlat
+                yield return CombatVisualManager.Instance.StartClashAnimation(p1Draggable, p2Draggable, p1WillDie, p2WillDie);
+            }
+            if (FloatingTextManager.Instance != null)
+            {
+                // P2'nin tepesinde, P1'den yediði hasar çýksýn
+                FloatingTextManager.Instance.ShowDamage(
+                    p2Draggable.transform.position,
+                    p1AttackResult.finalDamage,
+                    p1AttackResult.interactionType
+                );
 
-        // 4. GERÇEK VERÝLERÝ GÜNCELLE (Database Ýþlemi)
-        if (p1Data != null && p2Data != null)
-        {
-            int p1Hp = liveCardHealths[p1CardUniqueId];
-            int p2Hp = liveCardHealths[p2CardUniqueId];
+                // P1'in tepesinde, P2'den yediði hasar çýksýn
+                FloatingTextManager.Instance.ShowDamage(
+                    p1Draggable.transform.position,
+                    p2AttackResult.finalDamage,
+                    p2AttackResult.interactionType
+                );
+            }
 
-            p1Hp -= p2Data.attackPoint;
-            p2Hp -= p1Data.attackPoint;
+            // D. GERÇEK HASARI UYGULA (Database Güncellemesi)
+            int p1CurrentHp = liveCardHealths[p1CardUniqueId];
+            int p2CurrentHp = liveCardHealths[p2CardUniqueId];
 
-            liveCardHealths[p1CardUniqueId] = p1Hp;
-            liveCardHealths[p2CardUniqueId] = p2Hp;
+            p1CurrentHp -= p2AttackResult.finalDamage; // P1, P2'nin vuruþunu yer
+            p2CurrentHp -= p1AttackResult.finalDamage; // P2, P1'in vuruþunu yer
 
-            // Zaten görsel olarak gizledik, þimdi mantýksal olarak siliyoruz.
-            if (p1Hp <= 0) KillCard(1, activeLaneIndex, p1CardUniqueId);
-            if (p2Hp <= 0) KillCard(2, activeLaneIndex, p2CardUniqueId);
+            liveCardHealths[p1CardUniqueId] = p1CurrentHp;
+            liveCardHealths[p2CardUniqueId] = p2CurrentHp;
 
+            // TODO: Ýleride buraya "Floating Text" (Uçan Sayý) ekleyeceðiz.
+            // Örn: ShowDamageNumber(p1Draggable.transform, p2AttackResult.finalDamage, p2AttackResult.interactionType);
+
+            // Ölenleri oyundan sil
+            if (p1CurrentHp <= 0) KillCard(1, activeLaneIndex, p1CardUniqueId);
+            if (p2CurrentHp <= 0) KillCard(2, activeLaneIndex, p2CardUniqueId);
+
+            // Yeni tura hazýrlan
             ResetRound(lastPasserId);
         }
+        // Sadece P1 varsa -> Bölgeyi P1 alýr
         else if (p1Data != null && p2Data == null)
         {
             ConquerLane(1);
         }
+        // Sadece P2 varsa -> Bölgeyi P2 alýr
         else if (p2Data != null && p1Data == null)
         {
             ConquerLane(2);
         }
+        // Kimse yoksa
         else
         {
             ResetRound(lastPasserId);
         }
 
-        // Herkesi güncelle (Ölenler tamamen Destroy olacak)
+        // Son durumu herkese bildir
         GameManager.Instance.BroadcastState();
     }
 

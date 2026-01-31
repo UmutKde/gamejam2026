@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1.0f);
 
         // Baþlangýçta kaçar kart verilecek? (Örneðin 3'er tane)
-        int startingCardCount = 3;
+        int startingCardCount = 5;
 
         for (int i = 0; i < startingCardCount; i++)
         {
