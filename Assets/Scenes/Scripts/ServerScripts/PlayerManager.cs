@@ -109,15 +109,17 @@ public class PlayerManager : MonoBehaviour
     {
         if (FindCardById(data.uniqueId) != null) return;
 
-        Transform targetParent = (data.ownerId == myPlayerId) ? myHandTransform : enemyHandTransform;
-        GameObject newCard = Instantiate(commonCardPrefab, targetParent);
+        // Hedef el neresi?
+        Transform targetHand = (data.ownerId == myPlayerId) ? myHandTransform : enemyHandTransform;
 
-        // Görünmezlik sorununu çözen ayarlar
-        newCard.transform.localScale = Vector3.one;
-        newCard.transform.localPosition = Vector3.zero;
-        newCard.transform.localRotation = Quaternion.identity;
+        // DEÐÝÞÝKLÝK 1: Kartý direkt ele deðil, geçici olarak dýþarýya oluþturuyoruz.
+        // Parent olarak 'null' veriyoruz, birazdan AnimationManager onu Canvas'a alacak.
+        GameObject newCard = Instantiate(commonCardPrefab, null);
 
-        // Görsel Ayarla
+        // Baþlangýçta görünmez (scale 0) olsun ki animasyon baþlayana kadar "pýrt" diye ortada belirmesin.
+        newCard.transform.localScale = Vector3.zero;
+
+        // --- Kartýn Verilerini Doldur (Eski kodlarýn aynýsý) ---
         CardData cardData = GameManager.Instance.GetCardDataByID(data.cardDataId);
         MinionCardDisplay display = newCard.GetComponent<MinionCardDisplay>();
         if (display != null && cardData != null)
@@ -125,7 +127,6 @@ public class PlayerManager : MonoBehaviour
             display.Setup(cardData);
         }
 
-        // Draggable Ayarla
         Draggable draggable = newCard.GetComponent<Draggable>();
         if (draggable != null)
         {
@@ -134,6 +135,22 @@ public class PlayerManager : MonoBehaviour
         }
 
         newCard.name = $"Card_{data.uniqueId}_(Type_{data.cardDataId})";
+        // -------------------------------------------------------
+
+        // DEÐÝÞÝKLÝK 2: Animasyonu Baþlat!
+        // Eðer bu kart BENÝM kartýmsa ve Animasyon yöneticisi varsa animasyonu yap.
+        if (CardAnimationManager.Instance != null)
+        {
+            // Kartýn kime gittiði zaten 'targetHand' içinde belli.
+            CardAnimationManager.Instance.AnimateCardToHand(newCard, targetHand);
+        }
+        else
+        {
+            // Yönetici yoksa eski usul (Fallback)
+            newCard.transform.SetParent(targetHand);
+            newCard.transform.localScale = Vector3.one;
+            newCard.transform.localPosition = Vector3.zero;
+        }
     }
 
     void SyncBoard(GameState state)

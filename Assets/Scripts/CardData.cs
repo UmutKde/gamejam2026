@@ -15,6 +15,7 @@ public enum CardType
     Ground
 }
 
+
 [CreateAssetMenu(fileName = "New Minion", menuName = "GameJam/Minion Card")]
 public class CardData : ScriptableObject
 {

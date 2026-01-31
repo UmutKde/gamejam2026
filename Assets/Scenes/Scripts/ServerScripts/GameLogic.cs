@@ -5,6 +5,30 @@ using UnityEngine;
 public class GameLogic : MonoBehaviour
 {
     public static GameLogic Instance;
+    // Element Türleri
+    public enum ElementType
+    {
+        Fire,       // Ateþ
+        Water,      // Su
+        Earth,      // Toprak
+        Air,        // Hava
+        Electric    // Elektrik
+    }
+
+    // Vuruþ Tipi (Renkler buna göre belirlenecek)
+    public enum DamageInteraction
+    {
+        Neutral,        // Beyaz (x1.0 Hasar) - Nötr
+        Advantage,      // Sarý (x1.25 Hasar) - Ýç Döngü (Hafif Üstünlük)
+        Dominance       // Kýrmýzý (x1.5 Hasar) - Dýþ Döngü (Tam Üstünlük)
+    }
+
+    // Sonuç Paketi (GameLogic'e hem hasarý hem rengi göndermek için)
+    public struct CombatResult
+    {
+        public int finalDamage;
+        public DamageInteraction interactionType;
+    }
 
     [Header("Oyun Durumu")]
     public int activeLaneIndex = 0; // Þu an savaþýn döndüðü bölge (0-4)
@@ -22,6 +46,8 @@ public class GameLogic : MonoBehaviour
     {
         Instance = this;
     }
+    
+    
 
     // --- 1. KART OYNAMA KONTROLÜ ---
     // PlayerManager kart koymadan önce buraya soracak: "Koyabilir miyim?"
@@ -207,11 +233,13 @@ public class GameLogic : MonoBehaviour
 
     void ConquerLane(int winnerId)
     {
-        // 1. Puan ver
+        Debug.Log($"Bölge {activeLaneIndex} fethedildi! Kazanan: {winnerId}");
+
+        // 1. Skoru Ýþle
         if (winnerId == 1) p1VictoryScore++;
         else p2VictoryScore++;
 
-        // 2. Kart Çektir (Ödül)
+        // 2. MEVCUT ÖDÜL: Kazananýn ödül kartýný ver (Bu hemen çýksýn, önden gitsin)
         GameManager.Instance.SpawnCard(winnerId);
 
         // 3. Bölgeyi Ýlerle
@@ -221,11 +249,16 @@ public class GameLogic : MonoBehaviour
         if (activeLaneIndex >= 5)
         {
             Debug.Log($"OYUN BÝTTÝ! Skor - P1: {p1VictoryScore} | P2: {p2VictoryScore}");
-            // TODO: Game Over ekraný
+            // TODO: Game Over iþlemleri
         }
         else
         {
-            // Yeni bölge için paslarý sýfýrla, sýra kazananýn olsun (opsiyonel) veya sýrayla
+            // --- KRÝTÝK NOKTA ---
+            // Burada eski 'for' döngüsü KESÝNLÝKLE OLMAMALI.
+            // Sadece bu Coroutine baþlatýcý satýr olmalý:
+            StartCoroutine(DistributeNewRoundCards());
+
+            // Yeni bölgeye geç ve paslarý sýfýrla
             ResetRound(lastPasserId);
         }
     }
@@ -246,5 +279,28 @@ public class GameLogic : MonoBehaviour
     {
         if (liveCardHealths.ContainsKey(uniqueId)) return liveCardHealths[uniqueId];
         return 0;
+    }
+    // Kartlarý sýrayla, bir sana bir ona (seri þekilde) daðýtan fonksiyon
+    // Bu fonksiyon sýnýfýn içinde, diðer metodlarýn yanýnda durmalý
+    IEnumerator DistributeNewRoundCards()
+    {
+        // Toplam 2 tur dönecek (+2 kart için)
+        for (int i = 0; i < 2; i++)
+        {
+            // Bekleme süresi: Ýlk kartlarýn animasyonu karýþmasýn diye baþta da azýcýk bekle
+            yield return new WaitForSeconds(0.2f);
+
+            // 1. Kart: Player 1'e fýrlat
+            GameManager.Instance.SpawnCard(1);
+
+            // Bekle: P1'in kartý havada süzülürken zaman geçsin
+            yield return new WaitForSeconds(0.4f);
+
+            // 2. Kart: Player 2'ye fýrlat
+            GameManager.Instance.SpawnCard(2);
+
+            // Bekle: Diðer tura geçmeden önce
+            yield return new WaitForSeconds(0.4f);
+        }
     }
 }

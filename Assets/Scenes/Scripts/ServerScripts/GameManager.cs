@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -39,9 +40,34 @@ public class GameManager : MonoBehaviour
     {
         BroadcastState();
 
-        DistributeHands();
+        StartCoroutine(DealInitialHand());
     }
 
+    IEnumerator DealInitialHand()
+    {
+        // Sahne yüklendiðinde hemen baþlamasýn, oyuncu bi "Noluyor" desin.
+        yield return new WaitForSeconds(1.0f);
+
+        // Baþlangýçta kaçar kart verilecek? (Örneðin 3'er tane)
+        int startingCardCount = 3;
+
+        for (int i = 0; i < startingCardCount; i++)
+        {
+            // 1. Player 1'e kart ver
+            GameManager.Instance.SpawnCard(1);
+
+            // Kartýn gidiþini izlemek için bekle
+            yield return new WaitForSeconds(0.4f);
+
+            // 2. Player 2'ye kart ver
+            GameManager.Instance.SpawnCard(2);
+
+            // Diðer tura geçmeden bekle
+            yield return new WaitForSeconds(0.4f);
+        }
+
+        Debug.Log("Baþlangýç kartlarý daðýtýldý, oyun hazýr!");
+    }
     void DistributeHands()
     {
         for (int i = 0; i < 5; i++)

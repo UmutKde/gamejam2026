@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7829211232514955629
+--- !u!1 &3039149347130598023
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,10 +8,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6915103442022588355}
-  - component: {fileID: 989244741785220658}
-  - component: {fileID: 1304911304612877357}
-  - component: {fileID: 183658798549651019}
+  - component: {fileID: 1284092590857465248}
+  - component: {fileID: 3745364763991767498}
+  - component: {fileID: 3906561647825090133}
+  - component: {fileID: 1005516237523929069}
   m_Layer: 5
   m_Name: LaneStatus
   m_TagString: Untagged
@@ -19,40 +19,41 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &6915103442022588355
+--- !u!224 &1284092590857465248
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7829211232514955629}
+  m_GameObject: {fileID: 3039149347130598023}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 3717900399138321415}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 510, y: 250}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &989244741785220658
+--- !u!222 &3745364763991767498
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7829211232514955629}
+  m_GameObject: {fileID: 3039149347130598023}
   m_CullTransparentMesh: 1
---- !u!114 &1304911304612877357
+--- !u!114 &3906561647825090133
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7829211232514955629}
+  m_GameObject: {fileID: 3039149347130598023}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
@@ -76,25 +77,100 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &183658798549651019
+--- !u!114 &1005516237523929069
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7829211232514955629}
+  m_GameObject: {fileID: 3039149347130598023}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 24ca058077adda14f809085bf6396aef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LaneStatusDisplay
-  backgroundRenderer: {fileID: 1304911304612877357}
-  iconRenderer: {fileID: 0}
-  activeBorderSprite: {fileID: 9074462126035118095, guid: 6dab61f0de731d84887993af5021d8a2, type: 3}
-  activeColor: {r: 1, g: 1, b: 1, a: 1}
-  lockedPanelSprite: {fileID: 0}
-  lockIconSprite: {fileID: 0}
-  lockedColor: {r: 0, g: 0, b: 0, a: 0.7}
-  finishedPanelSprite: {fileID: 0}
-  finishedIconSprite: {fileID: 0}
-  finishedColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+  backgroundRenderer: {fileID: 3906561647825090133}
+  iconRenderer: {fileID: 6303893964616283341}
+  activeBorderSprite: {fileID: 0}
+  activeColor: {r: 1, g: 1, b: 1, a: 0}
+  lockedPanelSprite: {fileID: 7482667652216324306, guid: 0e701858174b906499869b8a55fc54f1, type: 3}
+  lockIconSprite: {fileID: -8335825539389867908, guid: 59803354b31f84daa91f7f2645bc9cf1, type: 3}
+  lockedColor: {r: 0, g: 0, b: 0, a: 0.8666667}
+  finishedPanelSprite: {fileID: 2177965146975566803, guid: 6960327f8a707994f92cf4ed12052bbe, type: 3}
+  finishedIconSprite: {fileID: 7482667652216324306, guid: 0e701858174b906499869b8a55fc54f1, type: 3}
+  finishedColor: {r: 0.31132078, g: 0.3069153, b: 0.3069153, a: 1}
+--- !u!1 &5232995670113052494
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3717900399138321415}
+  - component: {fileID: 5399815030352934317}
+  - component: {fileID: 6303893964616283341}
+  m_Layer: 5
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3717900399138321415
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5232995670113052494}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1284092590857465248}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5399815030352934317
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5232995670113052494}
+  m_CullTransparentMesh: 1
+--- !u!114 &6303893964616283341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5232995670113052494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
