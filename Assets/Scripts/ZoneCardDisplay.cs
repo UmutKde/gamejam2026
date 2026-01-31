@@ -3,29 +3,13 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
-public class ZoneCardDisplay : MonoBehaviour
+public class ZoneCardDisplay : BaseCardDisplay
 {
-    public ZoneData zoneData;
-
-    [Header("UI Connection")]
-    public TextMeshProUGUI zoneName;
-    public Image zoneImage;
-    public List<ElementTypes> weaknessTypes;
-    public ElementTypes powerfullType;
-
-    void Start()
+public override void Setup(CardData data)
     {
-        if(zoneData != null)
-            UpdateCardData();
-    }
+        base.Setup(data);
 
-    void UpdateCardData()
-    {
-        zoneName.text = zoneData.zoneName;
-        powerfullType = zoneData.powerfullType;
-        weaknessTypes = zoneData.weaknessTypes;
 
-        if(zoneData.zoneImage != null)
-            zoneImage.sprite = zoneData.zoneImage;
+
     }
 }

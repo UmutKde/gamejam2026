@@ -9,6 +9,11 @@ public enum ElementTypes
     Electric,   // Elektrik
     Air         // Hava
 }
+public enum CardType
+{
+    Minion,
+    Ground
+}
 
 [CreateAssetMenu(fileName = "New Minion", menuName = "GameJam/Minion Card")]
 public class CardData : ScriptableObject
@@ -18,6 +23,7 @@ public class CardData : ScriptableObject
     public string cardName;         // Kartın İsmi (Örn: Magma Golem)
     public Sprite cardImage;        // Minyonun Resmi
     public ElementTypes element;    // Element Türü
+    public CardType cardType;
 
     [Header("Değerler")]
     public int attackPoint;         // Saldırı Gücü
