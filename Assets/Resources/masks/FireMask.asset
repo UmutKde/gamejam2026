@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
   m_Name: FireMask
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  CardId: 26
+  CardId: 100
   cardName: FireMask
   cardImage: {fileID: -6565034684568948025, guid: 0a248d96e92f14c6f81bf858180b2016, type: 3}
   element: 0

@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
-  m_Name: New Card 2
+  m_Name: AirMask
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  CardId: 0
-  cardName: 
-  cardImage: {fileID: 0}
-  element: 0
+  CardId: 103
+  cardName: AirMask
+  cardImage: {fileID: -8956518158505316107, guid: 02a33dc8c98fd46799fe3baa1a725efe, type: 3}
+  element: 4
   cardType: 2
   attackPoint: 0
   healthPoint: 0

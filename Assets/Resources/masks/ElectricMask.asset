@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4484b002dfc2140718d70d161369ccb8, type: 3}
-  m_Name: New Card 3
+  m_Name: ElectricMask
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  CardId: 0
-  cardName: 
-  cardImage: {fileID: 0}
-  element: 0
+  CardId: 104
+  cardName: ElectricMask
+  cardImage: {fileID: 5986708953414538212, guid: 88c4fd1cbc22248bf8f3e07a023fc3c7, type: 3}
+  element: 3
   cardType: 2
   attackPoint: 0
   healthPoint: 0
