@@ -47,4 +47,19 @@ public class TurnManager : MonoBehaviour
             }
         }
     }
+    public void OnPassButtonPressed()
+    {
+        // 1. Sahnedeki PlayerManager'ý bul (Zaten tek tane býrakmýþtýk)
+        PlayerManager myManager = FindFirstObjectByType<PlayerManager>();
+
+        if (myManager != null)
+        {
+            // 2. Að üzerinden "Turumu Bitir" isteði yolla
+            myManager.AttemptEndTurn();
+        }
+        else
+        {
+            Debug.LogError("Hata: PlayerManager bulunamadý, Pas geçilemiyor!");
+        }
+    }
 }

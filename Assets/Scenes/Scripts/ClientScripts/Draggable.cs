@@ -63,7 +63,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         targetScale = Vector3.one * normalScaleAmount;
     }
 
-    // Minyonlar spawn olduğunda bu çağrılır
     public void InitializeCard(int id, int owner)
     {
         cardId = id;
@@ -71,7 +70,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         UpdateCardVisualsAndState();
     }
 
-    // EKSİK OLAN PARÇA BURADAYDI, ARTIK TAMAM
     public void RevealCard()
     {
         isRevealed = true;
@@ -80,9 +78,15 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     void Update()
     {
+        // YENİ: Her frame'de durumunu kontrol et (Hata riskini sıfıra indirir)
+        if (!globalIsDragging && !isAnimatingCombat)
+        {
+            UpdateCardVisualsAndState();
+        }
+
         if (isAnimatingCombat) return;
 
-        // Yumuşak Scale ve Pozisyon Animasyonu
+        // ... (Kalan animasyon kodları aynı) ...
         transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * animSpeed);
 
         if (!isLocked && canvasGroup.blocksRaycasts && !isPlayedOnBoard)
@@ -95,42 +99,42 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void UpdateCardVisualsAndState()
     {
-        // Maskeler her zaman açıktır, Minyonların arkası dönebilir
         if (maskDisplay != null) return;
 
         bool shouldFaceDown = true;
+        bool canInteract = false;
 
+        // MASADAKİ KARTLAR
         if (isPlayedOnBoard)
         {
-            canvasGroup.blocksRaycasts = false;
-            if (isRevealed) shouldFaceDown = false;
-            else shouldFaceDown = !isOwnedByClient;
+            canInteract = false; // Masadaki karta dokunulmaz
+
+            if (isRevealed) shouldFaceDown = false; // Savaşta açıldıysa açık kal
+            else shouldFaceDown = !isOwnedByClient; // Değilse sadece sahibi görsün
         }
-        else if (TurnManager.Instance != null)
+        // ELDEKİ KARTLAR
+        else
         {
-            // Sadece sırası gelen oyuncu kartlarını görebilir/oynayabilir
-            int currentTurnPlayer = TurnManager.Instance.isPlayerOneTurn ? 1 : 2;
+            // 1. GÖRÜNÜRLÜK: Benim kartımsa her zaman açık, rakibinkiyse kapalı
+            shouldFaceDown = !isOwnedByClient;
 
-            if (ownerId == currentTurnPlayer)
+            // 2. ETKİLEŞİM: Benim kartımsa VE Sıra bendeyse dokunabilirim
+            // GameManager.currentTurn 1 veya 2 döner. ownerId de 1 veya 2'dir.
+            if (isOwnedByClient && GameManager.Instance.currentTurn == ownerId)
             {
-                shouldFaceDown = false;
-                canvasGroup.blocksRaycasts = true;
-            }
-            else
-            {
-                shouldFaceDown = true;
-                canvasGroup.blocksRaycasts = false;
+                canInteract = true;
             }
         }
 
+        // Raycast (Dokunma) ayarı
+        canvasGroup.blocksRaycasts = canInteract;
+
+        // Yüzünü dön
         if (minionDisplay != null) minionDisplay.SetFaceDown(shouldFaceDown);
 
-        if (!isHovering && !isPlayedOnBoard) targetY = 0f;
+        // Hover animasyonu sıfırlama (Eğer kilitlendiyse havada kalmasın)
+        if (!canInteract && !isPlayedOnBoard && !isHovering) targetY = 0f;
     }
-
-    // ----------------------------------------------------------------
-    // --- MOUSE ETKİLEŞİMLERİ (BAŞLANGIÇ) ---
-    // ----------------------------------------------------------------
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -162,7 +166,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         }
     }
 
-    // --- SÜRÜKLEME BAŞLANGICI (GÜVENLİK KONTROLÜ BURADA) ---
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (isLocked || !canvasGroup.blocksRaycasts) return;
@@ -170,8 +173,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         // 1. GÜVENLİK: MASKE İSE
         if (maskDisplay != null)
         {
-            // Eğer oyun sırası maskenin sahibinde değilse iptal et
-            // (Not: GameManager.currentTurn 1 veya 2 döner)
             if (maskDisplay.ownerId != GameManager.Instance.currentTurn)
             {
                 Debug.LogWarning("Sıra sende değil, maskeyi oynayamazsın!");
@@ -181,7 +182,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         // 2. GÜVENLİK: MİNYON İSE
         else
         {
-            // Eğer oyun sırası minyonun sahibinde değilse iptal et
             if (this.ownerId != GameManager.Instance.currentTurn)
             {
                 Debug.LogWarning("Sıra sende değil, kart oynayamazsın!");
@@ -215,15 +215,11 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         transform.position = mousePos + (Vector3)dragOffset;
     }
 
-    // ----------------------------------------------------------------
-    // --- SÜRÜKLEME BİTİŞİ (MANTIK AYRIMI BURADA) ---
-    // ----------------------------------------------------------------
     public void OnEndDrag(PointerEventData eventData)
     {
         if (!globalIsDragging) return;
         globalIsDragging = false;
 
-        // --- YOL AYRIMI: MASKE Mİ, MİNYON MU? ---
         bool isMask = (maskDisplay != null);
 
         if (isMask)
@@ -236,37 +232,42 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         }
     }
 
-    // --- SENARYO A: MASKE BIRAKILDI ---
     void HandleMaskDrop(PointerEventData eventData)
     {
         GameObject droppedObj = eventData.pointerEnter;
 
-        // Şeytana mı bırakıldı? (İsim veya Tag kontrolü)
         if (droppedObj != null && (droppedObj.name == "DemonZone" || droppedObj.CompareTag("DemonZone")))
         {
-            // DÜZELTME: maskUniqueId -> uniqueId olarak değiştirildi.
-            Debug.Log($"Maske (ID: {maskDisplay.maskUniqueId}) Şeytana verildi!");
+            Debug.Log($"Maske Şeytana verildi!");
 
-            // Şeytan ödülünü ver
-            GameManager.Instance.SacrificeMask(maskDisplay.ownerId, maskDisplay.myData.element);
+            // --- DEĞİŞİKLİK BURADA ---
+            // Direkt GameManager yerine PlayerManager üzerinden istek yolluyoruz
 
-            // Maskeyi yok et
+            // Sahnedeki kendi PlayerManager'ını bul (veya statik instance varsa onu kullan)
+            PlayerManager[] managers = FindObjectsByType<PlayerManager>(FindObjectsSortMode.None);
+            foreach (var pm in managers)
+            {
+                if (pm.myPlayerId == maskDisplay.ownerId) // Kartın sahibiyle eşleşen yönetici
+                {
+                    pm.AttemptSacrificeMask(maskDisplay.myData.element);
+                    break;
+                }
+            }
+            // -------------------------
+
             Destroy(gameObject);
         }
         else
         {
-            // Yanlış yere bırakıldı, eve dön
-            ReturnToParent();
+            ResetToHand();
         }
     }
 
-    // --- SENARYO B: MİNYON BIRAKILDI ---
     void HandleMinionDrop(PointerEventData eventData)
     {
         if (eventData.pointerEnter != null)
         {
             PlayerManager myManager = null;
-            // Sahnedeki PlayerManager'ları bul
             PlayerManager[] managers = FindObjectsByType<PlayerManager>(FindObjectsSortMode.None);
 
             foreach (var pm in managers)
@@ -280,25 +281,21 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
             if (myManager != null)
             {
-                // Slot bulmaya çalış
                 int foundIndex = myManager.GetSlotIndex(eventData.pointerEnter);
 
                 if (foundIndex != -1)
                 {
-                    // Başarılı! Kartı oyna
                     myManager.AttemptPlayCard(this, foundIndex);
-                    return; // ReturnToParent çağırmamak için çık
+                    return;
                 }
             }
         }
 
         // Eğer buraya geldiyse kart oynanamamıştır
-        if (!isLocked) ReturnToParent();
+        if (!isLocked) ResetToHand(); // İsim değişti
     }
 
-    // --- YARDIMCI FONKSİYONLAR ---
-
-    void ReturnToParent()
+    public void ResetToHand()
     {
         canvasGroup.blocksRaycasts = true;
         transform.SetParent(parentToReturnTo);

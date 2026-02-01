@@ -20,6 +20,10 @@ public class ServerCardSpawn
 public class GameState
 {
     public int turnOwnerId;
+    public int activeLaneIndex;
+
     public int[] p1Slots = new int[5];
     public int[] p2Slots = new int[5];
+    public int[] p1Healths = new int[5];
+    public int[] p2Healths = new int[5];
 }

@@ -146,7 +146,7 @@ PrefabInstance:
     - target: {fileID: 6488386048856259027, guid: 921da5e9988848440b2a8ec1af6ece61, type: 3}
       propertyPath: connectedManager
       value: 
-      objectReference: {fileID: 1713298698}
+      objectReference: {fileID: 0}
     - target: {fileID: 6514391609821337472, guid: 921da5e9988848440b2a8ec1af6ece61, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -322,7 +322,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1916464338}
         m_TargetAssemblyTypeName: TurnManager, Assembly-CSharp
-        m_MethodName: ChangeTurn
+        m_MethodName: OnPassButtonPressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -617,6 +617,128 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &277895745
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 277895749}
+  - component: {fileID: 277895748}
+  - component: {fileID: 277895747}
+  - component: {fileID: 277895746}
+  m_Layer: 0
+  m_Name: NetworkManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &277895746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 277895745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror.Transports::kcp2k.KcpTransport
+  port: 7777
+  DualMode: 1
+  NoDelay: 1
+  Interval: 10
+  Timeout: 10000
+  RecvBufferSize: 7361536
+  SendBufferSize: 7361536
+  FastResend: 2
+  ReceiveWindowSize: 4096
+  SendWindowSize: 4096
+  MaxRetransmit: 40
+  MaximizeSocketBuffers: 1
+  ReliableMaxMessageSize: 297433
+  UnreliableMaxMessageSize: 1194
+  debugLog: 0
+  statisticsGUI: 0
+  statisticsLog: 0
+--- !u!114 &277895747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 277895745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkManagerHUD
+  offsetX: 0
+  offsetY: 0
+--- !u!114 &277895748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 277895745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aab4c8111b7c411b9b92cf3dbc5bd4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Mirror::Mirror.NetworkManager
+  dontDestroyOnLoad: 1
+  runInBackground: 1
+  headlessStartMode: 0
+  editorAutoStart: 0
+  sendRate: 60
+  offlineScene: 
+  onlineScene: 
+  offlineSceneLoadDelay: 0
+  transport: {fileID: 277895746}
+  networkAddress: localhost
+  maxConnections: 100
+  disconnectInactiveConnections: 0
+  disconnectInactiveTimeout: 60
+  authenticator: {fileID: 0}
+  playerPrefab: {fileID: 9196672433685642294, guid: 548e208c8500c6c40985b2096f9f111e, type: 3}
+  autoCreatePlayer: 1
+  playerSpawnMethod: 0
+  spawnPrefabs: []
+  exceptionsDisconnect: 1
+  snapshotSettings:
+    bufferTimeMultiplier: 2
+    bufferLimit: 32
+    catchupNegativeThreshold: -1
+    catchupPositiveThreshold: 1
+    catchupSpeed: 0.019999999552965164
+    slowdownSpeed: 0.03999999910593033
+    driftEmaDuration: 1
+    dynamicAdjustment: 1
+    dynamicAdjustmentTolerance: 1
+    deliveryTimeEmaDuration: 2
+  evaluationMethod: 0
+  evaluationInterval: 3
+  timeInterpolationGui: 0
+--- !u!4 &277895749
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 277895745}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 619.38477, y: 276.40817, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &441481476
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -785,7 +907,6 @@ Transform:
   - {fileID: 1916464337}
   - {fileID: 1816300879}
   - {fileID: 1970964292}
-  - {fileID: 1713298696}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &543078658
@@ -893,7 +1014,7 @@ GameObject:
   - component: {fileID: 682040962}
   - component: {fileID: 682040961}
   m_Layer: 5
-  m_Name: Panel (1)
+  m_Name: EnemyMasks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1201,7 +1322,7 @@ GameObject:
   - component: {fileID: 860746640}
   - component: {fileID: 860746644}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: OwnMasks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1727,7 +1848,7 @@ PrefabInstance:
     - target: {fileID: 6488386048856259027, guid: 921da5e9988848440b2a8ec1af6ece61, type: 3}
       propertyPath: connectedManager
       value: 
-      objectReference: {fileID: 1713298698}
+      objectReference: {fileID: 0}
     - target: {fileID: 6514391609821337472, guid: 921da5e9988848440b2a8ec1af6ece61, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1873,7 +1994,7 @@ PrefabInstance:
     - target: {fileID: 6488386048856259027, guid: 921da5e9988848440b2a8ec1af6ece61, type: 3}
       propertyPath: connectedManager
       value: 
-      objectReference: {fileID: 1713298698}
+      objectReference: {fileID: 0}
     - target: {fileID: 6514391609821337472, guid: 921da5e9988848440b2a8ec1af6ece61, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2250,7 +2371,7 @@ PrefabInstance:
     - target: {fileID: 6488386048856259027, guid: 921da5e9988848440b2a8ec1af6ece61, type: 3}
       propertyPath: connectedManager
       value: 
-      objectReference: {fileID: 1713298698}
+      objectReference: {fileID: 0}
     - target: {fileID: 6514391609821337472, guid: 921da5e9988848440b2a8ec1af6ece61, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3368,82 +3489,6 @@ MonoBehaviour:
   m_Spacing: {x: 10, y: 10}
   m_Constraint: 1
   m_ConstraintCount: 5
---- !u!1 &1713298695
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1713298696}
-  - component: {fileID: 1713298698}
-  - component: {fileID: 1713298697}
-  m_Layer: 0
-  m_Name: PlayerTwoManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1713298696
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1713298695}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 531065985}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1713298697
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1713298695}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5550dfc46a28b4449ba95447bb5bbc9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LocalNetwork
-  gameManager: {fileID: 1816300878}
-  myPlayerManager: {fileID: 1713298698}
---- !u!114 &1713298698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1713298695}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8e19cbc0b423e0418a1b05147036dad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
-  myPlayerId: 2
-  network: {fileID: 1713298697}
-  commonCardPrefab: {fileID: 3778660366398121944, guid: 960f45f0f9ed6f240977f8f0e21d5509, type: 3}
-  myHandTransform: {fileID: 1195852365}
-  enemyHandTransform: {fileID: 1449934140}
-  myBoardSlots:
-  - {fileID: 1182581982}
-  - {fileID: 2064969662}
-  - {fileID: 1125348251}
-  - {fileID: 13566922}
-  - {fileID: 1319008612}
-  enemyBoardSlots:
-  - {fileID: 979389439}
-  - {fileID: 1361205174}
-  - {fileID: 884954118}
-  - {fileID: 1584746479}
-  - {fileID: 1993588561}
 --- !u!1 &1756893830
 GameObject:
   m_ObjectHideFlags: 0
@@ -3573,12 +3618,14 @@ MonoBehaviour:
   natureRewardMinion: {fileID: 11400000, guid: c8aa892391c15744ebc3b2fef0d4811a, type: 2}
   electricRewardMinion: {fileID: 11400000, guid: dc685191fe7fa174f85a27e9eb7d1f99, type: 2}
   airRewardMinion: {fileID: 11400000, guid: eb270d0f276041e4a8cdf94250df8996, type: 2}
-  p1Network: {fileID: 1970964293}
-  p2Network: {fileID: 1713298697}
+  connectedPlayers: []
   currentState:
     turnOwnerId: 0
+    activeLaneIndex: 0
     p1Slots: 0500000006000000070000000800000009000000
     p2Slots: 0000000001000000020000000300000004000000
+    p1Healths: 0000000000000000000000000000000000000000
+    p2Healths: 0000000000000000000000000000000000000000
   currentTurn: 1
   allCardsLibrary:
   - {fileID: 11400000, guid: ada63973a83854fa4b10eb9b43c03145, type: 2}
@@ -3653,12 +3700,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0de1e894dc336d34594a5bec4431351a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatVisualManager
-  contactPadding: 40
-  windUpDistance: 30
-  windUpDuration: 0.2
-  strikeDuration: 0.1
-  returnDuration: 0.25
-  clashScaleIncrease: 1.1
+  animDuration: 0.2
+  clashImpactScale: 1.5
+  clashEffectPrefab: {fileID: 0}
 --- !u!114 &1816300882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3882,7 +3926,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TurnManager
   isPlayerOneTurn: 1
   p1Manager: {fileID: 1970964294}
-  p2Manager: {fileID: 1713298698}
+  p2Manager: {fileID: 0}
   endTurnButton: {fileID: 59871499}
 --- !u!1 &1970964291
 GameObject:
@@ -3894,7 +3938,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1970964292}
   - component: {fileID: 1970964294}
-  - component: {fileID: 1970964293}
   m_Layer: 0
   m_Name: PlayerOneManager
   m_TagString: Untagged
@@ -3917,20 +3960,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 531065985}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1970964293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1970964291}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5550dfc46a28b4449ba95447bb5bbc9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LocalNetwork
-  gameManager: {fileID: 1816300878}
-  myPlayerManager: {fileID: 1970964294}
 --- !u!114 &1970964294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3944,7 +3973,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
   myPlayerId: 1
-  network: {fileID: 1970964293}
   commonCardPrefab: {fileID: 3778660366398121944, guid: 960f45f0f9ed6f240977f8f0e21d5509, type: 3}
   myHandTransform: {fileID: 1449934140}
   enemyHandTransform: {fileID: 1195852365}
@@ -3960,6 +3988,8 @@ MonoBehaviour:
   - {fileID: 1125348251}
   - {fileID: 13566922}
   - {fileID: 1319008612}
+  myMasksParent: {fileID: 860746639}
+  enemyMasksParent: {fileID: 682040960}
 --- !u!1001 &1993588560
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4105,7 +4135,7 @@ PrefabInstance:
     - target: {fileID: 6488386048856259027, guid: 921da5e9988848440b2a8ec1af6ece61, type: 3}
       propertyPath: connectedManager
       value: 
-      objectReference: {fileID: 1713298698}
+      objectReference: {fileID: 0}
     - target: {fileID: 6514391609821337472, guid: 921da5e9988848440b2a8ec1af6ece61, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4207,3 +4237,4 @@ SceneRoots:
   - {fileID: 1756893832}
   - {fileID: 240286094}
   - {fileID: 1820417179}
+  - {fileID: 277895749}

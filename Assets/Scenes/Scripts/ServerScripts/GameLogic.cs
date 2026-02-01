@@ -5,25 +5,19 @@ using UnityEngine;
 public class GameLogic : MonoBehaviour
 {
     public static GameLogic Instance;
-    // Element Türleri
-    public enum ElementType
-    {
-        Fire,       // Ateþ
-        Water,      // Su
-        Earth,      // Toprak
-        Air,        // Hava
-        Electric    // Elektrik
-    }
+
+    // --- DEÐÝÞÝKLÝK: ElementType enum'ýný sildik. ---
+    // Artýk CardData'nýn kullandýðý global 'ElementTypes' enum'ýný kullanacaðýz.
 
     // Vuruþ Tipi (Renkler buna göre belirlenecek)
     public enum DamageInteraction
     {
-        Neutral,        // Beyaz (x1.0 Hasar) - Nötr
-        Advantage,      // Sarý (x1.25 Hasar) - Ýç Döngü (Hafif Üstünlük)
-        Dominance       // Kýrmýzý (x1.5 Hasar) - Dýþ Döngü (Tam Üstünlük)
+        Neutral,        // Beyaz (x1.0 Hasar)
+        Advantage,      // Sarý (x1.25 Hasar)
+        Dominance       // Kýrmýzý (x1.5 Hasar)
     }
 
-    // Sonuç Paketi (GameLogic'e hem hasarý hem rengi göndermek için)
+    // Sonuç Paketi
     public struct CombatResult
     {
         public int finalDamage;
@@ -31,39 +25,33 @@ public class GameLogic : MonoBehaviour
     }
 
     [Header("Oyun Durumu")]
-    public int activeLaneIndex = 0; // Þu an savaþýn döndüðü bölge (0-4)
+    public int activeLaneIndex = 0; // Þu an savaþýn döndüðü bölge
     public int p1VictoryScore = 0;
     public int p2VictoryScore = 0;
 
-    private int passCounter = 0; // Arka arkaya kaç kiþi pas dedi?
-    private int lastPasserId = 0; // Yeni tura kimin baþlayacaðýný belirlemek için
+    private int passCounter = 0;
+    private int lastPasserId = 0;
 
-    // Kartlarýn Canlarýný Takip Eden Sözlük (UniqueId -> Kalan Can)
-    // ScriptableObject verisini bozmamak için canlý veriyi burada tutuyoruz.
+    // Kartlarýn Canlarýný Takip Eden Sözlük
     private Dictionary<int, int> liveCardHealths = new Dictionary<int, int>();
 
     void Awake()
     {
         Instance = this;
     }
-    
-    
 
     // --- 1. KART OYNAMA KONTROLÜ ---
-    // PlayerManager kart koymadan önce buraya soracak: "Koyabilir miyim?"
     public bool CanPlayCard(int slotIndex)
     {
-        // KURAL: Sadece aktif olan (savaþýn döndüðü) lane'e kart oynanabilir.
         if (slotIndex != activeLaneIndex)
         {
-            Debug.LogWarning($"HATA: Sadece {activeLaneIndex}. bölgeye kart oynayabilirsin!");
+            // Debug.LogWarning kapalý kalabilir, spam yapmasýn
             return false;
         }
         return true;
     }
 
-    // --- 2. CAN TAKÝBÝ (SÝSTEM) ---
-    // Kart ilk oluþtuðunda GameManager buraya kaydettirecek
+    // --- 2. CAN TAKÝBÝ ---
     public void RegisterCardHealth(int uniqueId, int maxHealth)
     {
         if (!liveCardHealths.ContainsKey(uniqueId))
@@ -73,14 +61,10 @@ public class GameLogic : MonoBehaviour
     }
 
     // --- 3. AKSÝYON YÖNETÝMÝ ---
-    // GameManager, gelen paketi iþledikten sonra buraya bildirecek
-    // --- 3. AKSÝYON YÖNETÝMÝ ---
     public void OnPlayerAction(int playerId, string actionType)
     {
-        // Önceki tur sahibini al
         int currentTurnOwner = GameManager.Instance.currentState.turnOwnerId;
 
-        // Gelen istek sýrasý gelen kiþiden mi? (Extra Güvenlik)
         if (playerId != currentTurnOwner)
         {
             Debug.LogWarning($"HATA: Sýra {currentTurnOwner}'de ama {playerId} iþlem yapmaya çalýþtý.");
@@ -90,14 +74,10 @@ public class GameLogic : MonoBehaviour
         if (actionType == "PlayCard")
         {
             passCounter = 0;
-
             // Sýrayý deðiþtir
             int nextPlayer = (playerId == 1) ? 2 : 1;
 
-            // 1. STATE'Ý GÜNCELLE (Sunucunun hafýzasý)
             GameManager.Instance.currentState.turnOwnerId = nextPlayer;
-
-            // 2. HERKESE HABER VER (Clientlarýn hafýzasý)
             GameManager.Instance.BroadcastState();
         }
         else if (actionType == "Pass")
@@ -107,144 +87,111 @@ public class GameLogic : MonoBehaviour
 
             if (passCounter >= 2)
             {
-                // Savaþ Baþlýyor -> Savaþ bitince sýra mantýðý ResolveCombat içinde kurulacak
+                // Herkes pas geçti, savaþý baþlat
                 StartCoroutine(ResolveCombatCoroutine());
-                //ResolveCombat();
             }
             else
             {
-                // Henüz 1 pas -> Sýra diðerine
+                // Henüz 1 pas, sýra diðerine
                 int nextPlayer = (playerId == 1) ? 2 : 1;
-
-                // STATE GÜNCELLE VE YAYINLA
                 GameManager.Instance.currentState.turnOwnerId = nextPlayer;
                 GameManager.Instance.BroadcastState();
             }
         }
     }
 
-    // --- 4. SAVAÞ MEKANÝÐÝ (CORE) ---
-    // --- 4. SAVAÞ MEKANÝÐÝ (CORE - COROUTINE) ---
-    // --- 4. SAVAÞ MEKANÝÐÝ (GÜNCEL - ELEMENT DESTEKLÝ) ---
+    // --- 4. SAVAÞ MEKANÝÐÝ (GÜNCEL - NETWORK UYUMLU) ---
     IEnumerator ResolveCombatCoroutine()
     {
         Debug.Log($"--- {activeLaneIndex}. BÖLGE SAVAÞI BAÞLADI ---");
 
-        // 1. Mevcut Slotlardaki Kart ID'lerini al
         int p1CardUniqueId = GameManager.Instance.currentState.p1Slots[activeLaneIndex];
         int p2CardUniqueId = GameManager.Instance.currentState.p2Slots[activeLaneIndex];
 
         CardData p1Data = null;
         CardData p2Data = null;
-        Draggable p1Draggable = null;
-        Draggable p2Draggable = null;
 
-        // "Ölecek mi?" bayraklarý
         bool p1WillDie = false;
         bool p2WillDie = false;
 
-        // --- VERÝLERÝ TOPLA ---
-        if (p1CardUniqueId != -1)
-        {
-            p1Data = GameManager.Instance.GetCardDataByUniqueId(p1CardUniqueId);
-            p1Draggable = FindDraggableByUniqueId(p1CardUniqueId);
-        }
-        if (p2CardUniqueId != -1)
-        {
-            p2Data = GameManager.Instance.GetCardDataByUniqueId(p2CardUniqueId);
-            p2Draggable = FindDraggableByUniqueId(p2CardUniqueId);
-        }
+        // Verileri Topla
+        if (p1CardUniqueId != -1) p1Data = GameManager.Instance.GetCardDataByUniqueId(p1CardUniqueId);
+        if (p2CardUniqueId != -1) p2Data = GameManager.Instance.GetCardDataByUniqueId(p2CardUniqueId);
 
-        // --- SAVAÞ HESAPLAMALARI ---
-        // Eðer iki tarafta da kart varsa savaþtýr
+        // --- A. ÝKÝ TARAF DA VARSA SAVAÞ ---
         if (p1Data != null && p2Data != null)
         {
-            // A. ELEMENT HASARLARINI HESAPLA
-            // P1 saldýrýyor -> P2 savunuyor
+            // ELEMENT HESAPLAMALARI (Global ElementTypes Kullanýyor)
+            // P1 saldýrýyor, P2 savunuyor
             var p1AttackResult = ElementLogic.CalculateDamage(p1Data.attackPoint, p1Data.element, p2Data.element);
 
-            // P2 saldýrýyor -> P1 savunuyor
+            // P2 saldýrýyor, P1 savunuyor
             var p2AttackResult = ElementLogic.CalculateDamage(p2Data.attackPoint, p2Data.element, p1Data.element);
 
-            // Loglarda görelim (Debug için)
-            Debug.Log($"P1 ({p1Data.element}) vurdu: {p1AttackResult.finalDamage} Hasar ({p1AttackResult.interactionType})");
-            Debug.Log($"P2 ({p2Data.element}) vurdu: {p2AttackResult.finalDamage} Hasar ({p2AttackResult.interactionType})");
-
-            // B. ÖLÜM TAHMÝNÝ (Animasyon için)
-            // Mevcut canlardan hesaplanan hasarý çýkarýp kontrol ediyoruz
+            // ÖLÜM TAHMÝNÝ
             int p1TempHp = liveCardHealths[p1CardUniqueId] - p2AttackResult.finalDamage;
             int p2TempHp = liveCardHealths[p2CardUniqueId] - p1AttackResult.finalDamage;
 
             if (p1TempHp <= 0) p1WillDie = true;
             if (p2TempHp <= 0) p2WillDie = true;
 
-            // C. ANÝMASYONU OYNAT
-            if (p1Draggable != null && p2Draggable != null)
-            {
-                p1Draggable.RevealCard();
-                p2Draggable.RevealCard();
+            // --- YENÝ: VERÝ PAKETLEME VE YAYINLAMA ---
+            // Enumlarý int'e çeviriyoruz çünkü Mirror bazen Enum sevmez
+            int p1TakingDamageType = (int)p2AttackResult.interactionType; // P1'in yediði hasarýn rengi
+            int p2TakingDamageType = (int)p1AttackResult.interactionType; // P2'nin yediði hasarýn rengi
 
-                // Animasyon yöneticisine kimin öleceðini söyleyerek baþlat
-                yield return CombatVisualManager.Instance.StartClashAnimation(p1Draggable, p2Draggable, p1WillDie, p2WillDie);
-            }
-            if (FloatingTextManager.Instance != null)
-            {
-                // P2'nin tepesinde, P1'den yediði hasar çýksýn
-                FloatingTextManager.Instance.ShowDamage(
-                    p2Draggable.transform.position,
-                    p1AttackResult.finalDamage,
-                    p1AttackResult.interactionType
-                );
+            // TEK FONKSÝYONLA HER ÞEYÝ YOLLA:
+            // "Animasyonu baþlat, þu kiþiler ölecek, þu kadar hasar sayýlarý çýkacak"
+            GameManager.Instance.BroadcastClash(
+                p1CardUniqueId, p2CardUniqueId,
+                p1WillDie, p2WillDie,
+                p2AttackResult.finalDamage, p1TakingDamageType, // P1'in Hasarý
+                p1AttackResult.finalDamage, p2TakingDamageType  // P2'nin Hasarý
+            );
 
-                // P1'in tepesinde, P2'den yediði hasar çýksýn
-                FloatingTextManager.Instance.ShowDamage(
-                    p1Draggable.transform.position,
-                    p2AttackResult.finalDamage,
-                    p2AttackResult.interactionType
-                );
-            }
+            // --- YENÝ: SUNUCU BEKLEMESÝ ---
+            // Animasyonun oynatýlmasý için süre taný (3.5 sn ideal, animasyon sürene göre ayarla)
+            yield return new WaitForSeconds(3.5f);
 
-            // D. GERÇEK HASARI UYGULA (Database Güncellemesi)
+            // --- DEÐERLERÝ GERÇEKTEN GÜNCELLE ---
             int p1CurrentHp = liveCardHealths[p1CardUniqueId];
             int p2CurrentHp = liveCardHealths[p2CardUniqueId];
 
-            p1CurrentHp -= p2AttackResult.finalDamage; // P1, P2'nin vuruþunu yer
-            p2CurrentHp -= p1AttackResult.finalDamage; // P2, P1'in vuruþunu yer
+            p1CurrentHp -= p2AttackResult.finalDamage;
+            p2CurrentHp -= p1AttackResult.finalDamage;
 
             liveCardHealths[p1CardUniqueId] = p1CurrentHp;
             liveCardHealths[p2CardUniqueId] = p2CurrentHp;
 
-            // TODO: Ýleride buraya "Floating Text" (Uçan Sayý) ekleyeceðiz.
-            // Örn: ShowDamageNumber(p1Draggable.transform, p2AttackResult.finalDamage, p2AttackResult.interactionType);
-
-            // Ölenleri oyundan sil
+            // Ölenleri Sil
             if (p1CurrentHp <= 0) KillCard(1, activeLaneIndex, p1CardUniqueId);
             if (p2CurrentHp <= 0) KillCard(2, activeLaneIndex, p2CardUniqueId);
 
             // Yeni tura hazýrlan
             ResetRound(lastPasserId);
         }
-        // Sadece P1 varsa -> Bölgeyi P1 alýr
+        // --- B. SADECE P1 VARSA ---
         else if (p1Data != null && p2Data == null)
         {
             ConquerLane(1);
         }
-        // Sadece P2 varsa -> Bölgeyi P2 alýr
+        // --- C. SADECE P2 VARSA ---
         else if (p2Data != null && p1Data == null)
         {
             ConquerLane(2);
         }
-        // Kimse yoksa
+        // --- D. KÝMSE YOKSA ---
         else
         {
             ResetRound(lastPasserId);
         }
 
-        // Son durumu herkese bildir
+        // Son durumu herkese bildir (Canlar güncellendi, slotlar boþaldý vs.)
         GameManager.Instance.BroadcastState();
     }
 
-    // Yardýmcý fonksiyon (GameLogic içine ekle)
+    // --- YARDIMCI FONKSÝYONLAR ---
+
     private Draggable FindDraggableByUniqueId(int uniqueId)
     {
         Draggable[] cards = FindObjectsByType<Draggable>(FindObjectsSortMode.None);
@@ -255,11 +202,8 @@ public class GameLogic : MonoBehaviour
         return null;
     }
 
-    // --- 5. YARDIMCI FONKSÝYONLAR ---
-
     void KillCard(int ownerId, int slotIndex, int uniqueId)
     {
-        // GameManager'a söyle silsin (State ve Görsel)
         GameManager.Instance.ServerKillCard(ownerId, slotIndex, uniqueId);
     }
 
@@ -267,30 +211,23 @@ public class GameLogic : MonoBehaviour
     {
         Debug.Log($"Bölge {activeLaneIndex} fethedildi! Kazanan: {winnerId}");
 
-        // 1. Skoru Ýþle
         if (winnerId == 1) p1VictoryScore++;
         else p2VictoryScore++;
 
-        // 2. MEVCUT ÖDÜL: Kazananýn ödül kartýný ver (Bu hemen çýksýn, önden gitsin)
+        // Kazanan ödül kartý alýr
         GameManager.Instance.SpawnCard(winnerId);
 
-        // 3. Bölgeyi Ýlerle
         activeLaneIndex++;
 
-        // Oyun Bitti mi?
         if (activeLaneIndex >= 5)
         {
             Debug.Log($"OYUN BÝTTÝ! Skor - P1: {p1VictoryScore} | P2: {p2VictoryScore}");
-            // TODO: Game Over iþlemleri
+            // Game Over iþlemleri burada yapýlabilir
         }
         else
         {
-            // --- KRÝTÝK NOKTA ---
-            // Burada eski 'for' döngüsü KESÝNLÝKLE OLMAMALI.
-            // Sadece bu Coroutine baþlatýcý satýr olmalý:
+            // Yeni kartlarý daðýt
             StartCoroutine(DistributeNewRoundCards());
-
-            // Yeni bölgeye geç ve paslarý sýfýrla
             ResetRound(lastPasserId);
         }
     }
@@ -298,40 +235,26 @@ public class GameLogic : MonoBehaviour
     void ResetRound(int starterId)
     {
         passCounter = 0;
-
-        // Savaþ bitti, yeni tur baþlýyor. State'i güncelle.
         GameManager.Instance.currentState.turnOwnerId = starterId;
         GameManager.Instance.BroadcastState();
 
         Debug.Log($"Yeni tur baþladý. Sýra Player {starterId}'de.");
     }
 
-    // UI Güncellemesi için kartýn anlýk canýný döndürür
     public int GetLiveHealth(int uniqueId)
     {
         if (liveCardHealths.ContainsKey(uniqueId)) return liveCardHealths[uniqueId];
         return 0;
     }
-    // Kartlarý sýrayla, bir sana bir ona (seri þekilde) daðýtan fonksiyon
-    // Bu fonksiyon sýnýfýn içinde, diðer metodlarýn yanýnda durmalý
+
     IEnumerator DistributeNewRoundCards()
     {
-        // Toplam 2 tur dönecek (+2 kart için)
         for (int i = 0; i < 2; i++)
         {
-            // Bekleme süresi: Ýlk kartlarýn animasyonu karýþmasýn diye baþta da azýcýk bekle
             yield return new WaitForSeconds(0.2f);
-
-            // 1. Kart: Player 1'e fýrlat
             GameManager.Instance.SpawnCard(1);
-
-            // Bekle: P1'in kartý havada süzülürken zaman geçsin
             yield return new WaitForSeconds(0.4f);
-
-            // 2. Kart: Player 2'ye fýrlat
             GameManager.Instance.SpawnCard(2);
-
-            // Bekle: Diðer tura geçmeden önce
             yield return new WaitForSeconds(0.4f);
         }
     }
