@@ -3,17 +3,14 @@ using TMPro;
 
 public class DamagePopup : MonoBehaviour
 {
-    // DÝKKAT: Artýk 'TextMeshProUGUI' kullanýyoruz (UI için)
     public TextMeshProUGUI textMesh;
 
-    public float moveSpeed = 100f; // UI olduðu için Pixel cinsinden hýz (Deðeri artýrdýk)
+    public float moveSpeed = 150f; // Hýzý biraz artýrdým
     public float disappearSpeed = 3f;
     public float lifeTime = 1f;
 
     private Color textColor;
     private float disappearTimer;
-
-    // ... (Start fonksiyonunu silebilirsin, UI'da rotasyon sorun olmaz) ...
 
     public void Setup(int damageAmount, ElementLogic.DamageInteraction interactionType)
     {
@@ -24,17 +21,17 @@ public class DamagePopup : MonoBehaviour
         {
             case ElementLogic.DamageInteraction.Neutral:
                 textColor = Color.white;
-                textMesh.fontSize = 36; // UI olduðu için fontu büyüt
+                textMesh.fontSize = 65; // ESKÝSÝ: 36 -> BÜYÜDÜ
                 break;
 
             case ElementLogic.DamageInteraction.Advantage:
                 textColor = Color.yellow;
-                textMesh.fontSize = 45;
+                textMesh.fontSize = 85; // ESKÝSÝ: 45 -> BÜYÜDÜ
                 break;
 
             case ElementLogic.DamageInteraction.Dominance:
                 textColor = Color.red;
-                textMesh.fontSize = 55;
+                textMesh.fontSize = 110; // ESKÝSÝ: 55 -> KOCAMAN OLDU
                 textMesh.fontStyle = FontStyles.Bold;
                 break;
         }
@@ -44,10 +41,8 @@ public class DamagePopup : MonoBehaviour
 
     void Update()
     {
-        // Yukarý Hareket
         transform.position += Vector3.up * moveSpeed * Time.deltaTime;
 
-        // Kaybolma
         disappearTimer -= Time.deltaTime;
         if (disappearTimer < 0)
         {

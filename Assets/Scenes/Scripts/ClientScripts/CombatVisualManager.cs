@@ -8,8 +8,8 @@ public class CombatVisualManager : MonoBehaviour
     public static CombatVisualManager Instance;
 
     [Header("Ayarlar")]
-    public float animDuration = 0.3f; // Vuruş hızı
-    public float clashImpactScale = 1.6f; // Vuruş anındaki büyüklük
+    public float animDuration = 0.25f;
+    public float clashImpactScale = 1.6f;
 
     [Header("Efektler")]
     public GameObject clashEffectPrefab;
@@ -36,47 +36,39 @@ public class CombatVisualManager : MonoBehaviour
         int p2Damage, int p2Type
     )
     {
-        // 1. ORİJİNAL KONUMLARI KAYDET
-        // "true" parametresi world position'ı koru demektir.
+        // 1. EBEVEYN VE BAŞLANGIÇ KONUMLARI
         Transform card1OriginalParent = card1.transform.parent;
         Transform card2OriginalParent = card2.transform.parent;
 
-        Vector3 card1StartPos = card1.transform.position; // Şu anki Dünya Konumu
+        Vector3 card1StartPos = card1.transform.position;
         Vector3 card2StartPos = card2.transform.position;
-        Quaternion card1StartRot = card1.transform.rotation;
-        Quaternion card2StartRot = card2.transform.rotation;
 
-        // --- KRİTİK ADIM: EBEVEYNDEN KURTARMA ---
-        // Kartları slotlardan çıkarıp "Canvas"ın (Root) direkt çocuğu yapıyoruz.
-        // Bu sayede koordinat sistemi evrenselleşir ve en üstte görünürler.
+        // EBEVEYNDEN KURTAR (Canvas'ın tepesine al)
         card1.transform.SetParent(card1.transform.root, true);
         card2.transform.SetParent(card2.transform.root, true);
 
-        card1.isAnimatingCombat = true;
-        card2.isAnimatingCombat = true;
-
-        // Raycast'i kapat (Tıklanmasınlar)
+        // Raycast kapat
         CanvasGroup cg1 = card1.GetComponent<CanvasGroup>();
         CanvasGroup cg2 = card2.GetComponent<CanvasGroup>();
         if (cg1) cg1.blocksRaycasts = false;
         if (cg2) cg2.blocksRaycasts = false;
 
-        // --- MERKEZİ BULMA (EN SAĞLAM YÖNTEM) ---
-        // Artık "transform.root" Canvas olduğu için, onun pozisyonu tam olarak ekranın ortasıdır.
-        // Z eksenini kartların görünürlüğü için sabitliyoruz.
-        Vector3 combatCenter = card1.transform.root.position;
-        combatCenter.z = 0; // UI olduğu için Z'yi sıfırla
+        card1.isAnimatingCombat = true;
+        card2.isAnimatingCombat = true;
 
-        // --- DOTWEEN SEQUENCE ---
+        // MERKEZ NOKTASI
+        Vector3 combatCenter = card1.transform.root.position;
+        combatCenter.z = 0;
+
+        // --- SEQUENCE BAŞLIYOR ---
         Sequence clashSeq = DOTween.Sequence();
 
-        // AŞAMA 1: GERİLME (Mevcut konumlarından geriye doğru yaylanma)
-        // Kart kendi konumundan, merkeze zıt yöne hafifçe çekilir.
-        Vector3 dir1 = (card1StartPos - combatCenter).normalized; // Merkezden dışarı yön
+        // AŞAMA 1: GERİLME (Anticipation)
+        Vector3 dir1 = (card1StartPos - combatCenter).normalized;
         Vector3 dir2 = (card2StartPos - combatCenter).normalized;
 
-        clashSeq.Append(card1.transform.DOMove(card1StartPos + (dir1 * 100f), animDuration).SetEase(Ease.OutQuad));
-        clashSeq.Join(card2.transform.DOMove(card2StartPos + (dir2 * 100f), animDuration).SetEase(Ease.OutQuad));
+        clashSeq.Append(card1.transform.DOMove(card1StartPos + (dir1 * 50f), animDuration).SetEase(Ease.OutQuad));
+        clashSeq.Join(card2.transform.DOMove(card2StartPos + (dir2 * 50f), animDuration).SetEase(Ease.OutQuad));
 
         // Hafif Dönme
         clashSeq.Join(card1.transform.DORotate(new Vector3(0, 0, 15f), animDuration));
@@ -86,57 +78,69 @@ public class CombatVisualManager : MonoBehaviour
         clashSeq.Join(card1.transform.DOScale(Vector3.one * clashImpactScale * 0.8f, animDuration));
         clashSeq.Join(card2.transform.DOScale(Vector3.one * clashImpactScale * 0.8f, animDuration));
 
-        // AŞAMA 2: ÇARPIŞMA (Merkezde Buluşma)
-        clashSeq.Append(card1.transform.DOMove(combatCenter, 0.15f).SetEase(Ease.InBack)); // InBack = Gerilip vurma
-        clashSeq.Join(card2.transform.DOMove(combatCenter, 0.15f).SetEase(Ease.InBack));
+        // AŞAMA 2: VURUŞ (Impact)
+        clashSeq.Append(card1.transform.DOMove(combatCenter, 0.1f).SetEase(Ease.InBack));
+        clashSeq.Join(card2.transform.DOMove(combatCenter, 0.1f).SetEase(Ease.InBack));
 
-        // Dönmeyi düzelt
-        clashSeq.Join(card1.transform.DORotate(Vector3.zero, 0.15f));
-        clashSeq.Join(card2.transform.DORotate(Vector3.zero, 0.15f));
+        clashSeq.Join(card1.transform.DORotate(Vector3.zero, 0.1f));
+        clashSeq.Join(card2.transform.DORotate(Vector3.zero, 0.1f));
 
-        // Tam Boyut
-        clashSeq.Join(card1.transform.DOScale(Vector3.one * clashImpactScale, 0.15f));
-        clashSeq.Join(card2.transform.DOScale(Vector3.one * clashImpactScale, 0.15f));
+        clashSeq.Join(card1.transform.DOScale(Vector3.one * clashImpactScale, 0.1f));
+        clashSeq.Join(card2.transform.DOScale(Vector3.one * clashImpactScale, 0.1f));
 
-        // AŞAMA 3: EFEKTLER VE HASAR (Callback)
+        // AŞAMA 3: EFEKT & HASAR (Callback)
         clashSeq.AppendCallback(() => {
-            // Sarsıntı
             Camera.main.transform.DOShakePosition(0.4f, 10f, 20, 90, false, true);
-
-            // Efekt
             if (clashEffectPrefab) Instantiate(clashEffectPrefab, combatCenter, Quaternion.identity, card1.transform.root);
 
-            // Hasar Yazıları
             if (FloatingTextManager.Instance != null)
             {
-                // P1'in yediği hasar (Biraz sola)
-                FloatingTextManager.Instance.ShowDamage(combatCenter + new Vector3(-150, 150, 0), p1Damage, (ElementLogic.DamageInteraction)p1Type);
-                // P2'nin yediği hasar (Biraz sağa)
-                FloatingTextManager.Instance.ShowDamage(combatCenter + new Vector3(150, 150, 0), p2Damage, (ElementLogic.DamageInteraction)p2Type);
+                // DÜZELTME: Ofsetleri azalttık ve kartların merkezine yaklaştırdık.
+                // Yükseklik için sadece +50 (veya Canvas ölçeğine göre +100) yeterli.
+                // X ekseninde hafif ayırma yapıyoruz ki sayılar üst üste binmesin.
+
+                Vector3 p1TextPos = combatCenter + new Vector3(-60f, 50f, 0); // P1 Kartının az solu ve üstü
+                Vector3 p2TextPos = combatCenter + new Vector3(60f, 50f, 0);  // P2 Kartının az sağı ve üstü
+
+                FloatingTextManager.Instance.ShowDamage(p1TextPos, p1Damage, (ElementLogic.DamageInteraction)p1Type);
+                FloatingTextManager.Instance.ShowDamage(p2TextPos, p2Damage, (ElementLogic.DamageInteraction)p2Type);
             }
         });
 
-        // AŞAMA 4: GERİ TEPME (Recoil)
-        clashSeq.Append(card1.transform.DOMove(card1StartPos, 0.25f).SetEase(Ease.OutBack));
-        clashSeq.Join(card2.transform.DOMove(card2StartPos, 0.25f).SetEase(Ease.OutBack));
+        // AŞAMA 4: GERİ TEPME (Recoil) - Fiziksel Savrulma
+        // Çarpışmanın etkisiyle başladıkları yerin biraz önüne savrulurlar
+        Vector3 recoilPos1 = card1StartPos + (combatCenter - card1StartPos).normalized * 100f;
+        Vector3 recoilPos2 = card2StartPos + (combatCenter - card2StartPos).normalized * 100f;
 
-        // AŞAMA 5: SONUÇLARI GÖRMEK İÇİN BEKLE
-        clashSeq.AppendInterval(0.5f);
+        clashSeq.Append(card1.transform.DOMove(recoilPos1, 0.2f).SetEase(Ease.OutBack)); // OutBack ile yaylanarak durur
+        clashSeq.Join(card2.transform.DOMove(recoilPos2, 0.2f).SetEase(Ease.OutBack));
+
+        // SONUÇLARI GÖRMEK İÇİN BEKLEME (Havada Asılı Kalma)
+        clashSeq.AppendInterval(0.6f);
 
         yield return clashSeq.WaitForCompletion();
 
-        // --- SONUÇ (EVE DÖNÜŞ veya ÖLÜM) ---
+        // --- AŞAMA 5: FİNAL (ÖLÜM VEYA YUVAYA SÜZÜLME) ---
+
+        float returnDuration = 0.5f;
 
         // P1 İşlemleri
         if (p1Dies)
         {
+            // Olduğu yerde (Recoil pozisyonunda) küçülerek yok ol
             card1.transform.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack);
         }
         else
         {
-            // Ölmediyse eski boyutuna ve ebeveynine dönmek için hazırlan
-            card1.transform.DOScale(Vector3.one * 1.0f, 0.3f);
-            // Parent'a dönüşü aşağıda yapacağız
+            // --- CİLALI DÖNÜŞ ---
+            // 1. Önce ebeveyne bağla ama DÜNYA POZİSYONUNU KORU (true parametresi)
+            card1.transform.SetParent(card1OriginalParent, true);
+
+            // 2. Şimdi bulunduğu o uzak noktadan (0,0,0)'a YAVAŞÇA süzül
+            // Işınlanma yok, kayma var.
+            card1.transform.DOLocalMove(Vector3.zero, returnDuration).SetEase(Ease.OutQuad);
+            card1.transform.DOLocalRotate(Vector3.zero, returnDuration);
+            card1.transform.DOScale(Vector3.one * 1.0f, returnDuration);
         }
 
         // P2 İşlemleri
@@ -146,34 +150,28 @@ public class CombatVisualManager : MonoBehaviour
         }
         else
         {
-            card2.transform.DOScale(Vector3.one * 1.0f, 0.3f);
+            // --- CİLALI DÖNÜŞ ---
+            card2.transform.SetParent(card2OriginalParent, true);
+
+            card2.transform.DOLocalMove(Vector3.zero, returnDuration).SetEase(Ease.OutQuad);
+            card2.transform.DOLocalRotate(Vector3.zero, returnDuration);
+            card2.transform.DOScale(Vector3.one * 1.0f, returnDuration);
         }
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(returnDuration);
 
-        // --- TEMİZLİK VE YERİNE KOYMA ---
+        // --- TEMİZLİK ---
 
         if (!p1Dies)
         {
-            // Eski ebeveynine geri ver (Slotuna oturt)
-            card1.transform.SetParent(card1OriginalParent, true);
-            // Pozisyonu sıfırla (Slotun tam ortasına otursun)
-            card1.transform.localPosition = Vector3.zero;
-            card1.transform.localRotation = Quaternion.identity;
-
             card1.isAnimatingCombat = false;
         }
 
         if (!p2Dies)
         {
-            card2.transform.SetParent(card2OriginalParent, true);
-            card2.transform.localPosition = Vector3.zero;
-            card2.transform.localRotation = Quaternion.identity;
-
             card2.isAnimatingCombat = false;
         }
 
-        // Raycastleri geri aç (Draggable scripti zaten Update'te kontrol ediyor ama garanti olsun)
         if (cg1) cg1.blocksRaycasts = true;
         if (cg2) cg2.blocksRaycasts = true;
     }

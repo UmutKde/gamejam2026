@@ -249,6 +249,7 @@ GameObject:
   - component: {fileID: 59871501}
   - component: {fileID: 59871500}
   - component: {fileID: 59871499}
+  - component: {fileID: 59871502}
   m_Layer: 5
   m_Name: EndTurnButton
   m_TagString: Untagged
@@ -345,7 +346,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.26089722, g: 0.8018868, b: 0.19290671, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -370,6 +371,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 59871497}
   m_CullTransparentMesh: 1
+--- !u!114 &59871502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 59871497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f950d3ad1757954e967124a75859fbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SmartTurnButton
+  myButton: {fileID: 0}
+  buttonText: {fileID: 0}
+  buttonImage: {fileID: 0}
+  myTurnText: "TURU B\u0130T\u0130R"
+  enemyTurnText: "RAK\u0130P BEKLEN\u0130YOR..."
+  myTurnColor: {r: 0, g: 0.8, b: 0, a: 1}
+  enemyTurnColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1 &84546986
 GameObject:
   m_ObjectHideFlags: 0

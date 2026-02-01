@@ -240,14 +240,4 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // --- HASAR YAZISI YAYINI ---
-    public void BroadcastDamage(int targetCardId, int amount, ElementLogic.DamageInteraction type)
-    {
-        // Enum'ı int olarak yolluyoruz (Mirror Enum sevmez bazen)
-        int typeIndex = (int)type;
-        foreach (var player in connectedPlayers)
-        {
-            player.RpcShowDamage(targetCardId, amount, typeIndex);
-        }
-    }
 }
