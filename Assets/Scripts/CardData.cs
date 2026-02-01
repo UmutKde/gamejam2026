@@ -32,6 +32,6 @@ public class CardData : ScriptableObject
     public int healthPoint;         // Can Değeri
 
     [Header("Oyun İçi Durumlar")]
-    public bool isReversed;         // Ters mi? (Mekanik için)
-    public bool whoPlayed;          // Kim oynadı? (Oyuncu/Rakip)
+    public bool isReversed;
+    public bool whoPlayed;
 }

@@ -5,6 +5,12 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+    [Header("--- ELEMENT ÖDÜLLERİ (Minyonları Buraya Sürükle) ---")]
+    public CardData fireRewardMinion;     // Ateş maskesi için ödül
+    public CardData waterRewardMinion;    // Su maskesi için ödül
+    public CardData natureRewardMinion;   // Doğa maskesi için ödül
+    public CardData electricRewardMinion; // Elektrik maskesi için ödül
+    public CardData airRewardMinion;      // Hava maskesi için ödül
 
     [Header("Ağ Bağlantıları")]
     public LocalNetwork p1Network;
@@ -103,39 +109,45 @@ public class GameManager : MonoBehaviour
     }
 
     // --- MASKE VE ÖDÜL SİSTEMİ (YENİ) ---
+// --- MASKE VE ÖDÜL SİSTEMİ (DÜZELTİLMİŞ) ---
     public void SacrificeMask(int playerId, ElementTypes element)
     {
-        Debug.Log($"Player {playerId}, {element} maskesini feda etti. Ödül aranıyor...");
+        Debug.Log($"Player {playerId}, {element} maskesini feda etti. Özel ödül hazırlanıyor...");
 
-        // 1. Kütüphaneden Elementi eşleşen MİNYONLARI bul
-        List<CardData> matchingCards = new List<CardData>();
-        
-        foreach (var card in allCardsLibrary)
+        CardData reward = null;
+
+        // Gelen elemente göre yukarıda tanımladığın değişkenleri eşleştiriyoruz
+        switch (element)
         {
-            if (card.element == element && card.cardType == CardType.Minion)
-            {
-                matchingCards.Add(card);
-            }
+            case ElementTypes.Fire:
+                reward = fireRewardMinion;      // DÜZELTİLDİ (Eskisi: fireRewardCard)
+                break;
+            case ElementTypes.Water:
+                reward = waterRewardMinion;     // DÜZELTİLDİ
+                break;
+            case ElementTypes.Nature:
+                reward = natureRewardMinion;    // DÜZELTİLDİ
+                break;
+            case ElementTypes.Electric:
+                reward = electricRewardMinion;  // DÜZELTİLDİ
+                break;
+            case ElementTypes.Air:
+                reward = airRewardMinion;       // DÜZELTİLDİ
+                break;
         }
 
-        // 2. Ödül ver
-        if (matchingCards.Count > 0)
+        // Eğer Inspector'da kartı koymayı unuttuysan hata vermesin, uyarısın
+        if (reward != null)
         {
-            // Rastgele birini seç
-            CardData reward = matchingCards[Random.Range(0, matchingCards.Count)];
-            Debug.Log($"Ödül bulundu: {reward.cardName}");
-
-            // O oyuncuya bu özel kartı spawnla
+            Debug.Log($"Özel Ödül Veriliyor: {reward.cardName}");
             SpawnCard(playerId, reward);
         }
         else
         {
-            Debug.LogWarning($"Bu elemente ({element}) uygun minyon bulunamadı! Rastgele veriliyor.");
-            SpawnCard(playerId); // Bulamazsa teselli ödülü rastgele kart
+            Debug.LogError($"HATA: {element} elementi için GameManager'da ödül kartı seçilmemiş! Lütfen Inspector'dan atama yap.");
         }
     }
-
-    // --- VERİ ERİŞİM (OPTIMIZED) ---
+ // --- VERİ ERİŞİM (OPTIMIZED) ---
     public CardData GetCardDataByID(int libraryId)
     {
         foreach (var data in allCardsLibrary)
