@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   CardId: 28
   cardName: The Primal
-  cardImage: {fileID: 2387440593566021336, guid: d684d71109fff4e4e940039191fd6be6, type: 3}
+  cardImage: {fileID: 2387440593566021336, guid: e7a07027748fa42a0aeba880c582c321, type: 3}
   element: 0
   cardType: 0
   attackPoint: 12
   healthPoint: 7
   isReversed: 0
   whoPlayed: 0
+  isRewardOnly: 1

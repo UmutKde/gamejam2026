@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   CardId: 25
   cardName: The Stormbringer
-  cardImage: {fileID: 4665075455844892136, guid: afaa96ed94427484f93f9c8aba19b645, type: 3}
+  cardImage: {fileID: 4665075455844892136, guid: 30314dcb552f542aba852e52072e5750, type: 3}
   element: 3
   cardType: 0
   attackPoint: 13
   healthPoint: 6
   isReversed: 0
   whoPlayed: 0
+  isRewardOnly: 1
