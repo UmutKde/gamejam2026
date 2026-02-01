@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 495bedf5733ef47a89fd63d85424c592, type: 3}
   m_Name: waterzone
   m_EditorClassIdentifier: Assembly-CSharp::ZoneData
-  zoneName: 
-  zoneImage: {fileID: 0}
-  elementTypes: 0
-  powerfullType: 0
+  zoneName: waterzone
+  zoneImage: {fileID: -3757250302861819758, guid: 8f3e94caee9f44f5a81fb817b127d57c, type: 3}
+  elementTypes: 1
+  powerfullType: 1
   weaknessTypes: 

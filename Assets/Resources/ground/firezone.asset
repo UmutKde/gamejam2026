@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 495bedf5733ef47a89fd63d85424c592, type: 3}
   m_Name: firezone
   m_EditorClassIdentifier: Assembly-CSharp::ZoneData
-  zoneName: Firezone
+  zoneName: firezone
   zoneImage: {fileID: 1562288557386235040, guid: e462b2eb33cec45aeb51353d23ed247a, type: 3}
   elementTypes: 0
   powerfullType: 0

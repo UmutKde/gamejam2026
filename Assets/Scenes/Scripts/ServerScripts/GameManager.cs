@@ -6,171 +6,200 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("Að Baðlantýlarý")]
+    [Header("AÄŸ BaÄŸlantÄ±larÄ±")]
     public LocalNetwork p1Network;
     public LocalNetwork p2Network;
 
     [Header("Oyun Durumu")]
     public GameState currentState;
+    public int currentTurn = 1; // 1 = Player 1, 2 = Player 2 (Draggable bunu okuyacak)
+    
     private int globalCardIdCounter = 0;
 
-    [Header("KART KÜTÜPHANESÝ")]
+    [Header("KART KÃœTÃœPHANESÄ°")]
     public List<CardData> allCardsLibrary;
 
-    public CardData GetCardDataByID(int requestedId)
-    {
-        foreach (var data in allCardsLibrary)
-        {
-            if (data.CardId == requestedId) return data;
-        }
-        Debug.LogError($"HATA: ID {requestedId} kütüphanede bulunamadý!");
-        return null;
-    }
+    // Ã–NEMLÄ°: UniqueID'den (Ã–rn: 5) CardDataID'ye (Ã–rn: 101) hÄ±zlÄ± eriÅŸim iÃ§in harita
+    private Dictionary<int, int> uniqueIdToLibraryIdMap = new Dictionary<int, int>();
 
     void Awake()
     {
         Instance = this;
         currentState = new GameState();
-        currentState.turnOwnerId = 1;
+        currentState.turnOwnerId = 1; // BaÅŸlangÄ±Ã§ sÄ±rasÄ±
 
+        // SlotlarÄ± temizle
         for (int i = 0; i < 5; i++) { currentState.p1Slots[i] = -1; currentState.p2Slots[i] = -1; }
     }
 
     void Start()
     {
         BroadcastState();
-
         StartCoroutine(DealInitialHand());
     }
 
+    // --- BAÅžLANGIÃ‡ DAÄžITIMI ---
     IEnumerator DealInitialHand()
     {
-        // Sahne yüklendiðinde hemen baþlamasýn, oyuncu bi "Noluyor" desin.
         yield return new WaitForSeconds(1.0f);
 
-        // Baþlangýçta kaçar kart verilecek? (Örneðin 3'er tane)
         int startingCardCount = 5;
 
         for (int i = 0; i < startingCardCount; i++)
         {
-            // 1. Player 1'e kart ver
-            GameManager.Instance.SpawnCard(1);
-
-            // Kartýn gidiþini izlemek için bekle
+            SpawnCard(1); // P1'e Rastgele
             yield return new WaitForSeconds(0.4f);
-
-            // 2. Player 2'ye kart ver
-            GameManager.Instance.SpawnCard(2);
-
-            // Diðer tura geçmeden bekle
+            SpawnCard(2); // P2'ye Rastgele
             yield return new WaitForSeconds(0.4f);
         }
 
-        Debug.Log("Baþlangýç kartlarý daðýtýldý, oyun hazýr!");
-    }
-    void DistributeHands()
-    {
-        for (int i = 0; i < 5; i++)
-        {
-            SpawnCard(1);
-            SpawnCard(2);
-        }
+        Debug.Log("BaÅŸlangÄ±Ã§ kartlarÄ± daÄŸÄ±tÄ±ldÄ±!");
     }
 
-    public void SpawnCard(int ownerId)
+    // --- KART OLUÅžTURMA (SPAWN) ---
+    // specificCardData: EÄŸer null gelirse rastgele seÃ§er, dolu gelirse o kartÄ± Ã¼retir.
+    public void SpawnCard(int ownerId, CardData specificCardData = null)
     {
         if (allCardsLibrary.Count == 0) return;
 
-        int randomIndex = Random.Range(0, allCardsLibrary.Count);
-        CardData selectedRandomCard = allCardsLibrary[randomIndex];
+        CardData cardToSpawn = specificCardData;
 
-        // DÜZELTME 2: Satýrlarýn yerini deðiþtirdik.
-        // Önce ID'yi oluþturuyoruz:
-        int uniqueInstanceId = globalCardIdCounter++;
-
-        // Sonra bu ID'yi kullanýyoruz:
-        if (GameLogic.Instance != null)
+        // EÄŸer Ã¶zel bir kart istenmediyse rastgele seÃ§
+        if (cardToSpawn == null)
         {
-            GameLogic.Instance.RegisterCardHealth(uniqueInstanceId, selectedRandomCard.healthPoint);
+            int randomIndex = Random.Range(0, allCardsLibrary.Count);
+            cardToSpawn = allCardsLibrary[randomIndex];
+            
+            // Rastgele seÃ§imde sadece MÄ°NYON gelmesini saÄŸla (Maske gelmesin)
+            // (Basit bir while dÃ¶ngÃ¼sÃ¼ ile minyon bulana kadar dene veya listeyi filtrele)
+            // Åžimdilik kÃ¼tÃ¼phanende sadece minyonlar olduÄŸunu varsayÄ±yoruz.
         }
 
+        // 1. Unique ID Ãœret
+        int uniqueInstanceId = globalCardIdCounter++;
+
+        // 2. SÃ¶zlÃ¼ÄŸe Kaydet (HÄ±zlÄ± EriÅŸim Ä°Ã§in)
+        if (!uniqueIdToLibraryIdMap.ContainsKey(uniqueInstanceId))
+        {
+            uniqueIdToLibraryIdMap.Add(uniqueInstanceId, cardToSpawn.CardId);
+        }
+
+        // 3. Hakeme (GameLogic) Can deÄŸerini kaydet
+        if (GameLogic.Instance != null)
+        {
+            GameLogic.Instance.RegisterCardHealth(uniqueInstanceId, cardToSpawn.healthPoint);
+        }
+
+        // 4. Paketi HazÄ±rla ve Yolla
         ServerCardSpawn packet = new ServerCardSpawn();
         packet.uniqueId = uniqueInstanceId;
-        packet.cardDataId = selectedRandomCard.CardId;
+        packet.cardDataId = cardToSpawn.CardId;
         packet.ownerId = ownerId;
 
         string json = JsonUtility.ToJson(packet);
 
         if (p1Network) p1Network.OnPacketReceived(json);
-        // if (p2Network) p2Network.OnPacketReceived(json); 
+        // if (p2Network) p2Network.OnPacketReceived(json); // Ä°kinci oyuncu baÄŸlanÄ±nca aÃ§
     }
 
-    public void ReceivePacketFromClient(string json)
+    // --- MASKE VE Ã–DÃœL SÄ°STEMÄ° (YENÄ°) ---
+    public void SacrificeMask(int playerId, ElementTypes element)
     {
-        PlayerAction action = JsonUtility.FromJson<PlayerAction>(json);
+        Debug.Log($"Player {playerId}, {element} maskesini feda etti. Ã–dÃ¼l aranÄ±yor...");
 
-        // 1. SIRA KONTROLÜ (Devlet Kapýsý)
-        if (action.playerId != currentState.turnOwnerId)
+        // 1. KÃ¼tÃ¼phaneden Elementi eÅŸleÅŸen MÄ°NYONLARI bul
+        List<CardData> matchingCards = new List<CardData>();
+        
+        foreach (var card in allCardsLibrary)
         {
-            Debug.LogWarning($"Sýra Player {action.playerId}'de deðil! Þu anki sýra: {currentState.turnOwnerId}");
-            // Ýsteði reddet, client'a mevcut durumu tekrar gönder ki senkron olsun
-            BroadcastState();
-            return;
-        }
-
-        // 2. MANTIK ÝÞLEME (Hakeme Gönder)
-        if (action.actionType == "PlayCard")
-        {
-            // Önce kartý slota yerleþtir (State Güncellemesi)
-            if (action.playerId == 1) currentState.p1Slots[action.slotIndex] = action.cardId;
-            else currentState.p2Slots[action.slotIndex] = action.cardId;
-
-            // Sonra Hakeme Söyle: "Kart oynandý, sýrayý deðiþtir"
-            GameLogic.Instance.OnPlayerAction(action.playerId, "PlayCard");
-        }
-        else if (action.actionType == "EndTurn")
-        {
-            // Hakeme Söyle: "Pas geçildi, ne yapacaksan yap"
-            GameLogic.Instance.OnPlayerAction(action.playerId, "Pass");
-        }
-
-        // Not: BroadcastState()'i artýk GameLogic çaðýrýyor, burada çaðýrmamýza gerek yok.
-    }
-
-    public void BroadcastState()
-    {
-        string json = JsonUtility.ToJson(currentState);
-        if (p1Network) p1Network.OnPacketReceived(json);
-        if (p2Network) p2Network.OnPacketReceived(json);
-    }
-    // GameManager.cs içine ekle:
-    public CardData GetCardDataByUniqueId(int uniqueId)
-    {
-        // State'deki veya sahnedeki kart listesinden bulmamýz lazým.
-        // Basit yöntem: Eþleþen kartý kütüphaneden bulamayýz çünkü uniqueId sahnede üretildi.
-        // ÇÖZÜM: Kart oluþtururken "Hangi Unique ID = Hangi CardData ID" diye bir sözlük tutman lazým.
-        // Þimdilik sahneden bulalým (En kolayý):
-
-        Draggable[] cards = FindObjectsByType<Draggable>(FindObjectsSortMode.None);
-        foreach (var card in cards)
-        {
-            if (card.cardId == uniqueId) // Draggable.cardId artýk uniqueId tutuyor
+            if (card.element == element && card.cardType == CardType.Minion)
             {
-                // Kartýn üzerindeki görsel scriptten dataya ulaþabiliriz
-                return card.GetComponent<MinionCardDisplay>().cardData;
+                matchingCards.Add(card);
             }
+        }
+
+        // 2. Ã–dÃ¼l ver
+        if (matchingCards.Count > 0)
+        {
+            // Rastgele birini seÃ§
+            CardData reward = matchingCards[Random.Range(0, matchingCards.Count)];
+            Debug.Log($"Ã–dÃ¼l bulundu: {reward.cardName}");
+
+            // O oyuncuya bu Ã¶zel kartÄ± spawnla
+            SpawnCard(playerId, reward);
+        }
+        else
+        {
+            Debug.LogWarning($"Bu elemente ({element}) uygun minyon bulunamadÄ±! Rastgele veriliyor.");
+            SpawnCard(playerId); // Bulamazsa teselli Ã¶dÃ¼lÃ¼ rastgele kart
+        }
+    }
+
+    // --- VERÄ° ERÄ°ÅžÄ°M (OPTIMIZED) ---
+    public CardData GetCardDataByID(int libraryId)
+    {
+        foreach (var data in allCardsLibrary)
+        {
+            if (data.CardId == libraryId) return data;
         }
         return null;
     }
 
+    // Sahnedeki objeleri taramak yerine Dictionary kullanÄ±yoruz (Ã‡ok daha hÄ±zlÄ±)
+    public CardData GetCardDataByUniqueId(int uniqueId)
+    {
+        if (uniqueIdToLibraryIdMap.ContainsKey(uniqueId))
+        {
+            int libraryId = uniqueIdToLibraryIdMap[uniqueId];
+            return GetCardDataByID(libraryId);
+        }
+        
+        // Hata durumunda null dÃ¶n
+        return null;
+    }
+
+    // --- Ä°LETÄ°ÅžÄ°M VE STATE ---
+    public void ReceivePacketFromClient(string json)
+    {
+        PlayerAction action = JsonUtility.FromJson<PlayerAction>(json);
+
+        // SIRA KONTROLÃœ
+        if (action.playerId != currentState.turnOwnerId)
+        {
+            Debug.LogWarning($"SÄ±ra hatasÄ±! Ä°stek: P{action.playerId}, SÄ±ra: P{currentState.turnOwnerId}");
+            BroadcastState();
+            return;
+        }
+
+        // MANTIK Ä°ÅžLEME
+        if (action.actionType == "PlayCard")
+        {
+            if (action.playerId == 1) currentState.p1Slots[action.slotIndex] = action.cardId;
+            else currentState.p2Slots[action.slotIndex] = action.cardId;
+
+            GameLogic.Instance.OnPlayerAction(action.playerId, "PlayCard");
+        }
+        else if (action.actionType == "EndTurn")
+        {
+            GameLogic.Instance.OnPlayerAction(action.playerId, "Pass");
+        }
+    }
+
+    public void BroadcastState()
+    {
+        // currentTurn deÄŸerini state ile senkronize tutalÄ±m
+        currentTurn = currentState.turnOwnerId; 
+
+        string json = JsonUtility.ToJson(currentState);
+        if (p1Network) p1Network.OnPacketReceived(json);
+        if (p2Network) p2Network.OnPacketReceived(json);
+    }
+
     public void ServerKillCard(int ownerId, int slotIndex, int uniqueId)
     {
-        // 1. State'den sil
         if (ownerId == 1) currentState.p1Slots[slotIndex] = -1;
         else currentState.p2Slots[slotIndex] = -1;
 
-        // 2. Clientlara "Bu kartý yok et" emri yolla (Yeni bir paket tipi gerekebilir veya State update yeterli olur)
-        // State update ile slot -1 olunca PlayerManager o kartý yok etmeli.
         BroadcastState();
     }
 }

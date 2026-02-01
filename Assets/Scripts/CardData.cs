@@ -12,11 +12,12 @@ public enum ElementTypes
 public enum CardType
 {
     Minion,
-    Ground
+    Ground,
+    Mask
 }
 
 
-[CreateAssetMenu(fileName = "New Minion", menuName = "GameJam/Minion Card")]
+[CreateAssetMenu(fileName = "New Card", menuName = "GameJam/Universal Card Data")]
 public class CardData : ScriptableObject
 {
     [Header("Temel Bilgiler")]

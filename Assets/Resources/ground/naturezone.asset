@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 495bedf5733ef47a89fd63d85424c592, type: 3}
   m_Name: naturezone
   m_EditorClassIdentifier: Assembly-CSharp::ZoneData
-  zoneName: 
-  zoneImage: {fileID: 0}
-  elementTypes: 0
-  powerfullType: 0
+  zoneName: naturezone
+  zoneImage: {fileID: 4532824016761281161, guid: f8465b5c953f648bfb09b6fda70b94aa, type: 3}
+  elementTypes: 2
+  powerfullType: 2
   weaknessTypes: 

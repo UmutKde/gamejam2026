@@ -4,27 +4,30 @@ using UnityEngine.UI;
 
 public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    // --- GLOBAL DURUMLAR ---
     public static bool globalIsDragging = false;
     public bool isRevealed = false;
     public bool isAnimatingCombat = false;
 
-    public void RevealCard()
-    {
-        isRevealed = true;
-        UpdateCardVisualsAndState();
-    }
-
+    // --- KÄ°MLÄ°K VE SAHÄ°PLÄ°K ---
     [Header("Kimlik")]
-    public int cardId;
-    public int ownerId;
+    public int cardId; // Minyonlar iÃ§in Unique ID
+    public int ownerId; // 1 veya 2
 
     [Header("Durum")]
-    public bool isOwnedByClient;
+    public bool isOwnedByClient; // Bu istemciye mi ait? (LAN iÃ§in)
     public bool isPlayedOnBoard = false;
+    public bool isLocked = false; // Hareket kilitli mi?
 
-    private MinionCardDisplay visualDisplay;
+    // --- GÃ–RSEL REFERANSLAR ---
+    private MinionCardDisplay minionDisplay; // Minyon GÃ¶rseli (Varsa)
+    private MaskCardDisplay maskDisplay;     // Maske GÃ¶rseli (Varsa)
+    private CanvasGroup canvasGroup;
+    private Canvas cardCanvas;
+    private RectTransform rectTransform;
 
-    [Header("Animasyon Ayarlarý")]
+    // --- ANÄ°MASYON AYARLARI ---
+    [Header("Animasyon AyarlarÄ±")]
     public float hoverScaleAmount = 1.3f;
     public float hoverHeightAmount = 50f;
     public float dragScaleAmount = 1.1f;
@@ -32,12 +35,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public float normalScaleAmount = 1.0f;
     public float animSpeed = 15f;
 
-    private CanvasGroup canvasGroup;
-    private Canvas cardCanvas;
-    private RectTransform rectTransform;
     public Transform parentToReturnTo = null;
-    public bool isLocked = false;
-
     private Vector3 targetScale;
     private float targetY;
     private Vector2 dragOffset;
@@ -47,19 +45,24 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     {
         canvasGroup = GetComponent<CanvasGroup>();
         rectTransform = GetComponent<RectTransform>();
-        visualDisplay = GetComponent<MinionCardDisplay>();
+
+        // KartÄ±n tipine gÃ¶re componentleri almaya Ã§alÄ±ÅŸ
+        minionDisplay = GetComponent<MinionCardDisplay>();
+        maskDisplay = GetComponent<MaskCardDisplay>();
 
         cardCanvas = GetComponent<Canvas>();
         if (cardCanvas == null)
         {
             cardCanvas = gameObject.AddComponent<Canvas>();
-            gameObject.AddComponent<GraphicRaycaster>();
+            // Raycaster ekle ki tutulabilsin
+            if (GetComponent<GraphicRaycaster>() == null) gameObject.AddComponent<GraphicRaycaster>();
             cardCanvas.overrideSorting = false;
         }
 
         targetScale = Vector3.one * normalScaleAmount;
     }
 
+    // Minyonlar spawn olduÄŸunda bu Ã§aÄŸrÄ±lÄ±r
     public void InitializeCard(int id, int owner)
     {
         cardId = id;
@@ -67,18 +70,22 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         UpdateCardVisualsAndState();
     }
 
+    // EKSÄ°K OLAN PARÃ‡A BURADAYDI, ARTIK TAMAM
+    public void RevealCard()
+    {
+        isRevealed = true;
+        UpdateCardVisualsAndState();
+    }
+
     void Update()
     {
-        // EÐER SAVAÞ ANÝMASYONU VARSA BU KOD ÇALIÞMASIN, KARIÞMASIN.
         if (isAnimatingCombat) return;
 
-        // 1. SCALE ANÝMASYONU
+        // YumuÅŸak Scale ve Pozisyon Animasyonu
         transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * animSpeed);
 
-        // 2. POZÝSYON ANÝMASYONU
         if (!isLocked && canvasGroup.blocksRaycasts && !isPlayedOnBoard)
         {
-            // ... (Eski kodlar aynen kalacak) ...
             float currentX = transform.localPosition.x;
             float newY = Mathf.Lerp(transform.localPosition.y, targetY, Time.deltaTime * animSpeed);
             transform.localPosition = new Vector3(currentX, newY, 0);
@@ -87,33 +94,26 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void UpdateCardVisualsAndState()
     {
+        // Maskeler her zaman aÃ§Ä±ktÄ±r, MinyonlarÄ±n arkasÄ± dÃ¶nebilir
+        if (maskDisplay != null) return;
+
         bool shouldFaceDown = true;
 
-        // 1. KART SAHADAYSA (Lock Mantýðý ve Gizlilik)
         if (isPlayedOnBoard)
         {
             canvasGroup.blocksRaycasts = false;
-
-            // EÐER KART AÇIKLANDIYSA (SAVAÞTIYSA) HERKESE GÖZÜKÜR
-            if (isRevealed)
-            {
-                shouldFaceDown = false;
-            }
-            // DEÐÝLSE SADECE SAHÝBÝ GÖRÜR
-            else
-            {
-                shouldFaceDown = !isOwnedByClient;
-            }
+            if (isRevealed) shouldFaceDown = false;
+            else shouldFaceDown = !isOwnedByClient;
         }
-        // 2. KART ELDEYSE (Sýra Mantýðý)
         else if (TurnManager.Instance != null)
         {
+            // Sadece sÄ±rasÄ± gelen oyuncu kartlarÄ±nÄ± gÃ¶rebilir/oynayabilir
             int currentTurnPlayer = TurnManager.Instance.isPlayerOneTurn ? 1 : 2;
 
             if (ownerId == currentTurnPlayer)
             {
                 shouldFaceDown = false;
-                canvasGroup.blocksRaycasts = true; // Sadece sýrasý gelen oynayabilir
+                canvasGroup.blocksRaycasts = true;
             }
             else
             {
@@ -122,19 +122,21 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             }
         }
 
-        if (visualDisplay != null) visualDisplay.SetFaceDown(shouldFaceDown);
+        if (minionDisplay != null) minionDisplay.SetFaceDown(shouldFaceDown);
 
-        if (!isHovering && !isPlayedOnBoard)
-        {
-            targetY = 0f;
-        }
+        if (!isHovering && !isPlayedOnBoard) targetY = 0f;
     }
+
+    // ----------------------------------------------------------------
+    // --- MOUSE ETKÄ°LEÅžÄ°MLERÄ° (BAÅžLANGIÃ‡) ---
+    // ----------------------------------------------------------------
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (isLocked || !canvasGroup.blocksRaycasts || globalIsDragging) return;
 
-        if (isOwnedByClient && !isPlayedOnBoard)
+        // Maske veya Ä°stemcinin Minyonu ise bÃ¼yÃ¼t
+        if (maskDisplay != null || (isOwnedByClient && !isPlayedOnBoard))
         {
             isHovering = true;
             targetY = hoverHeightAmount;
@@ -149,7 +151,7 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         if (isLocked || !canvasGroup.blocksRaycasts) return;
         if (globalIsDragging && isHovering) return;
 
-        if (isOwnedByClient && !isPlayedOnBoard)
+        if (maskDisplay != null || (isOwnedByClient && !isPlayedOnBoard))
         {
             isHovering = false;
             targetY = 0f;
@@ -159,20 +161,44 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         }
     }
 
+    // --- SÃœRÃœKLEME BAÅžLANGICI (GÃœVENLÄ°K KONTROLÃœ BURADA) ---
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (isLocked || !canvasGroup.blocksRaycasts) return;
 
+        // 1. GÃœVENLÄ°K: MASKE Ä°SE
+        if (maskDisplay != null)
+        {
+            // EÄŸer oyun sÄ±rasÄ± maskenin sahibinde deÄŸilse iptal et
+            // (Not: GameManager.currentTurn 1 veya 2 dÃ¶ner)
+            if (maskDisplay.ownerId != GameManager.Instance.currentTurn)
+            {
+                Debug.LogWarning("SÄ±ra sende deÄŸil, maskeyi oynayamazsÄ±n!");
+                return;
+            }
+        }
+        // 2. GÃœVENLÄ°K: MÄ°NYON Ä°SE
+        else
+        {
+            // EÄŸer oyun sÄ±rasÄ± minyonun sahibinde deÄŸilse iptal et
+            if (this.ownerId != GameManager.Instance.currentTurn)
+            {
+                Debug.LogWarning("SÄ±ra sende deÄŸil, kart oynayamazsÄ±n!");
+                return;
+            }
+        }
+
+        // SÃ¼rÃ¼kleme BaÅŸlÄ±yor
         globalIsDragging = true;
         isHovering = false;
 
         parentToReturnTo = transform.parent;
-        transform.SetParent(transform.root);
-        canvasGroup.blocksRaycasts = false;
+        transform.SetParent(transform.root); // En Ã¼ste taÅŸÄ±
+        canvasGroup.blocksRaycasts = false; // Raycast'i kapat ki altÄ± gÃ¶rebilelim
         targetScale = Vector3.one * dragScaleAmount;
 
         cardCanvas.overrideSorting = true;
-        cardCanvas.sortingOrder = 200;
+        cardCanvas.sortingOrder = 200; // En Ã¶nde Ã§izilsin
 
         Vector3 mousePos;
         RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out mousePos);
@@ -181,64 +207,107 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (isLocked) return;
+        if (isLocked || !globalIsDragging) return;
+
         Vector3 mousePos;
         RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out mousePos);
         transform.position = mousePos + (Vector3)dragOffset;
     }
 
-    // --- BURASI GÜNCELLENDÝ: SLOTINFO KALDIRILDI ---
+    // ----------------------------------------------------------------
+    // --- SÃœRÃœKLEME BÄ°TÄ°ÅžÄ° (MANTIK AYRIMI BURADA) ---
+    // ----------------------------------------------------------------
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!globalIsDragging) return;
         globalIsDragging = false;
 
-        if (!isLocked)
+        // --- YOL AYRIMI: MASKE MÄ°, MÄ°NYON MU? ---
+        bool isMask = (maskDisplay != null);
+
+        if (isMask)
         {
-            // Varsayýlan olarak kartý yerine dönmeye ayarla.
-            // Eðer AttemptPlayCard baþarýlý olursa, kart zaten slota ýþýnlanacak ve bu override edilecek.
-            bool playSuccessful = false;
+            HandleMaskDrop(eventData);
+        }
+        else
+        {
+            HandleMinionDrop(eventData);
+        }
+    }
 
-            if (eventData.pointerEnter != null)
+    // --- SENARYO A: MASKE BIRAKILDI ---
+    void HandleMaskDrop(PointerEventData eventData)
+    {
+        GameObject droppedObj = eventData.pointerEnter;
+
+        // Åžeytana mÄ± bÄ±rakÄ±ldÄ±? (Ä°sim veya Tag kontrolÃ¼)
+        if (droppedObj != null && (droppedObj.name == "DemonZone" || droppedObj.CompareTag("DemonZone")))
+        {
+            // DÃœZELTME: maskUniqueId -> uniqueId olarak deÄŸiÅŸtirildi.
+            Debug.Log($"Maske (ID: {maskDisplay.maskUniqueId}) Åžeytana verildi!");
+
+            // Åžeytan Ã¶dÃ¼lÃ¼nÃ¼ ver
+            GameManager.Instance.SacrificeMask(maskDisplay.ownerId, maskDisplay.myData.element);
+
+            // Maskeyi yok et
+            Destroy(gameObject);
+        }
+        else
+        {
+            // YanlÄ±ÅŸ yere bÄ±rakÄ±ldÄ±, eve dÃ¶n
+            ReturnToParent();
+        }
+    }
+
+    // --- SENARYO B: MÄ°NYON BIRAKILDI ---
+    void HandleMinionDrop(PointerEventData eventData)
+    {
+        if (eventData.pointerEnter != null)
+        {
+            PlayerManager myManager = null;
+            // Sahnedeki PlayerManager'larÄ± bul
+            PlayerManager[] managers = FindObjectsByType<PlayerManager>(FindObjectsSortMode.None);
+
+            foreach (var pm in managers)
             {
-                PlayerManager myManager = null;
-                PlayerManager[] managers = FindObjectsByType<PlayerManager>(FindObjectsSortMode.None);
-
-                foreach (var pm in managers)
+                if (pm.myPlayerId == ownerId)
                 {
-                    if (pm.myPlayerId == ownerId)
-                    {
-                        myManager = pm;
-                        break;
-                    }
-                }
-
-                if (myManager != null)
-                {
-                    int foundIndex = myManager.GetSlotIndex(eventData.pointerEnter);
-
-                    if (foundIndex != -1)
-                    {
-                        // DEÐÝÞÝKLÝK BURADA: Kartýn kendisini (this) gönderiyoruz
-                        // myManager artýk kartý alýr almaz slota yapýþtýracak.
-                        myManager.AttemptPlayCard(this, foundIndex);
-
-                        // Not: PlayCard baþarýlý olursa isLocked = true olur.
-                        // Aþaðýdaki kontrolle çakýþmamasý için kontrol edebilirsin ama
-                        // MoveToSlot içinde parent deðiþtiði için sorun olmaz.
-                    }
+                    myManager = pm;
+                    break;
                 }
             }
 
-            // Eðer kart kilitlenmediyse (yani oynanamadýysa veya boþluða býrakýldýysa) eline geri dönsün
-            if (!isLocked)
+            if (myManager != null)
             {
-                canvasGroup.blocksRaycasts = true;
-                transform.SetParent(parentToReturnTo);
-                targetScale = Vector3.one * normalScaleAmount;
-                targetY = 0f;
-                cardCanvas.overrideSorting = false;
-                cardCanvas.sortingOrder = 0;
+                // Slot bulmaya Ã§alÄ±ÅŸ
+                int foundIndex = myManager.GetSlotIndex(eventData.pointerEnter);
+
+                if (foundIndex != -1)
+                {
+                    // BaÅŸarÄ±lÄ±! KartÄ± oyna
+                    myManager.AttemptPlayCard(this, foundIndex);
+                    return; // ReturnToParent Ã§aÄŸÄ±rmamak iÃ§in Ã§Ä±k
+                }
             }
+        }
+
+        // EÄŸer buraya geldiyse kart oynanamamÄ±ÅŸtÄ±r
+        if (!isLocked) ReturnToParent();
+    }
+
+    // --- YARDIMCI FONKSÄ°YONLAR ---
+
+    void ReturnToParent()
+    {
+        canvasGroup.blocksRaycasts = true;
+        transform.SetParent(parentToReturnTo);
+        targetScale = Vector3.one * normalScaleAmount;
+        targetY = 0f;
+
+        if (cardCanvas != null)
+        {
+            cardCanvas.overrideSorting = false;
+            cardCanvas.sortingOrder = 0;
         }
     }
 
@@ -248,9 +317,11 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         rectTransform.anchoredPosition = Vector2.zero;
+
         isPlayedOnBoard = true;
         isLocked = true;
         targetScale = Vector3.one * playedScaleAmount;
+
         if (cardCanvas) cardCanvas.overrideSorting = false;
         UpdateCardVisualsAndState();
     }

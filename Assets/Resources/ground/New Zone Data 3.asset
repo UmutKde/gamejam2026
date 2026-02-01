@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 495bedf5733ef47a89fd63d85424c592, type: 3}
   m_Name: New Zone Data 3
   m_EditorClassIdentifier: Assembly-CSharp::ZoneData
-  zoneName: 
-  zoneImage: {fileID: 0}
-  elementTypes: 0
-  powerfullType: 0
+  zoneName: airzone
+  zoneImage: {fileID: -6495620947589447953, guid: 1479a83a22efe43d18fd375774435a0b, type: 3}
+  elementTypes: 4
+  powerfullType: 4
   weaknessTypes: 
