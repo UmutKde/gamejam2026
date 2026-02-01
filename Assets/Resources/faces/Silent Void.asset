@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   CardId: 27
   cardName: Silent Void
-  cardImage: {fileID: -5953599927135805793, guid: fbec8bd2deb876e4a8aa20d26c621d13, type: 3}
+  cardImage: {fileID: -8291556439296783591, guid: d8380c95f11dd48598f97bc1ab3d0735, type: 3}
   element: 4
   cardType: 0
   attackPoint: 11
   healthPoint: 9
   isReversed: 0
   whoPlayed: 0
+  isRewardOnly: 1

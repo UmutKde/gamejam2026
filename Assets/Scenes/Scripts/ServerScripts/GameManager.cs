@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+
     [Header("--- ELEMENT ÖDÜLLERİ (Minyonları Buraya Sürükle) ---")]
     public CardData fireRewardMinion;     // Ateş maskesi için ödül
     public CardData waterRewardMinion;    // Su maskesi için ödül
@@ -18,14 +19,14 @@ public class GameManager : MonoBehaviour
 
     [Header("Oyun Durumu")]
     public GameState currentState;
-    public int currentTurn = 1; // 1 = Player 1, 2 = Player 2 (Draggable bunu okuyacak)
+    public int currentTurn = 1; // 1 = Player 1, 2 = Player 2
     
     private int globalCardIdCounter = 0;
 
     [Header("KART KÜTÜPHANESİ")]
     public List<CardData> allCardsLibrary;
 
-    // ÖNEMLİ: UniqueID'den (Örn: 5) CardDataID'ye (Örn: 101) hızlı erişim için harita
+    // UniqueID'den (Örn: 5) CardDataID'ye (Örn: 101) hızlı erişim için harita
     private Dictionary<int, int> uniqueIdToLibraryIdMap = new Dictionary<int, int>();
 
     void Awake()
@@ -53,9 +54,9 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < startingCardCount; i++)
         {
-            SpawnCard(1); // P1'e Rastgele
+            SpawnCard(1); // P1'e Rastgele (Ödüller hariç)
             yield return new WaitForSeconds(0.4f);
-            SpawnCard(2); // P2'ye Rastgele
+            SpawnCard(2); // P2'ye Rastgele (Ödüller hariç)
             yield return new WaitForSeconds(0.4f);
         }
 
@@ -70,16 +71,35 @@ public class GameManager : MonoBehaviour
 
         CardData cardToSpawn = specificCardData;
 
-        // Eğer özel bir kart istenmediyse rastgele seç
+        // --- RASTGELE SEÇİM MANTIĞI (FİLTRELİ) ---
         if (cardToSpawn == null)
         {
-            int randomIndex = Random.Range(0, allCardsLibrary.Count);
-            cardToSpawn = allCardsLibrary[randomIndex];
-            
-            // Rastgele seçimde sadece MİNYON gelmesini sağla (Maske gelmesin)
-            // (Basit bir while döngüsü ile minyon bulana kadar dene veya listeyi filtrele)
-            // Şimdilik kütüphanende sadece minyonlar olduğunu varsayıyoruz.
+            // 1. Sadece "Ödül Olmayan" (Normal) kartları bir listeye topla
+            List<CardData> validCards = new List<CardData>();
+
+            foreach (var card in allCardsLibrary)
+            {
+                // Eğer kart "Sadece Ödül" DEĞİLSE ve tipi Minyon ise listeye ekle
+                // NOT: CardData scriptinde 'isRewardOnly' değişkeni olmalı!
+                if (card.isRewardOnly == false && card.cardType == CardType.Minion)
+                {
+                    validCards.Add(card);
+                }
+            }
+
+            // 2. Eğer geçerli kart varsa içinden seç
+            if (validCards.Count > 0)
+            {
+                int randomIndex = Random.Range(0, validCards.Count);
+                cardToSpawn = validCards[randomIndex];
+            }
+            else
+            {
+                Debug.LogError("HATA: Kütüphanede hiç normal (ödül olmayan) kart kalmamış!");
+                return;
+            }
         }
+        // ------------------------------------------------
 
         // 1. Unique ID Üret
         int uniqueInstanceId = globalCardIdCounter++;
@@ -105,11 +125,10 @@ public class GameManager : MonoBehaviour
         string json = JsonUtility.ToJson(packet);
 
         if (p1Network) p1Network.OnPacketReceived(json);
-        // if (p2Network) p2Network.OnPacketReceived(json); // İkinci oyuncu bağlanınca aç
+        // if (p2Network) p2Network.OnPacketReceived(json); 
     }
 
-    // --- MASKE VE ÖDÜL SİSTEMİ (YENİ) ---
-// --- MASKE VE ÖDÜL SİSTEMİ (DÜZELTİLMİŞ) ---
+    // --- MASKE VE ÖDÜL SİSTEMİ ---
     public void SacrificeMask(int playerId, ElementTypes element)
     {
         Debug.Log($"Player {playerId}, {element} maskesini feda etti. Özel ödül hazırlanıyor...");
@@ -120,26 +139,27 @@ public class GameManager : MonoBehaviour
         switch (element)
         {
             case ElementTypes.Fire:
-                reward = fireRewardMinion;      // DÜZELTİLDİ (Eskisi: fireRewardCard)
+                reward = fireRewardMinion;
                 break;
             case ElementTypes.Water:
-                reward = waterRewardMinion;     // DÜZELTİLDİ
+                reward = waterRewardMinion;
                 break;
             case ElementTypes.Nature:
-                reward = natureRewardMinion;    // DÜZELTİLDİ
+                reward = natureRewardMinion;
                 break;
             case ElementTypes.Electric:
-                reward = electricRewardMinion;  // DÜZELTİLDİ
+                reward = electricRewardMinion;
                 break;
             case ElementTypes.Air:
-                reward = airRewardMinion;       // DÜZELTİLDİ
+                reward = airRewardMinion;
                 break;
         }
 
-        // Eğer Inspector'da kartı koymayı unuttuysan hata vermesin, uyarısın
+        // Ödülü ver
         if (reward != null)
         {
             Debug.Log($"Özel Ödül Veriliyor: {reward.cardName}");
+            // Buraya özel kartı yolluyoruz (specificCardData dolu olduğu için filtreye takılmaz)
             SpawnCard(playerId, reward);
         }
         else
@@ -147,7 +167,8 @@ public class GameManager : MonoBehaviour
             Debug.LogError($"HATA: {element} elementi için GameManager'da ödül kartı seçilmemiş! Lütfen Inspector'dan atama yap.");
         }
     }
- // --- VERİ ERİŞİM (OPTIMIZED) ---
+
+    // --- VERİ ERİŞİM ---
     public CardData GetCardDataByID(int libraryId)
     {
         foreach (var data in allCardsLibrary)
@@ -157,7 +178,6 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    // Sahnedeki objeleri taramak yerine Dictionary kullanıyoruz (Çok daha hızlı)
     public CardData GetCardDataByUniqueId(int uniqueId)
     {
         if (uniqueIdToLibraryIdMap.ContainsKey(uniqueId))
@@ -165,8 +185,6 @@ public class GameManager : MonoBehaviour
             int libraryId = uniqueIdToLibraryIdMap[uniqueId];
             return GetCardDataByID(libraryId);
         }
-        
-        // Hata durumunda null dön
         return null;
     }
 
@@ -175,7 +193,6 @@ public class GameManager : MonoBehaviour
     {
         PlayerAction action = JsonUtility.FromJson<PlayerAction>(json);
 
-        // SIRA KONTROLÜ
         if (action.playerId != currentState.turnOwnerId)
         {
             Debug.LogWarning($"Sıra hatası! İstek: P{action.playerId}, Sıra: P{currentState.turnOwnerId}");
@@ -183,7 +200,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // MANTIK İŞLEME
         if (action.actionType == "PlayCard")
         {
             if (action.playerId == 1) currentState.p1Slots[action.slotIndex] = action.cardId;
@@ -199,7 +215,6 @@ public class GameManager : MonoBehaviour
 
     public void BroadcastState()
     {
-        // currentTurn değerini state ile senkronize tutalım
         currentTurn = currentState.turnOwnerId; 
 
         string json = JsonUtility.ToJson(currentState);

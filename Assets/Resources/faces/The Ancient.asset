@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   CardId: 29
   cardName: The Ancient
-  cardImage: {fileID: -8291556439296783591, guid: 223e2f90087727b4eafe669c25faac02, type: 3}
+  cardImage: {fileID: -5953599927135805793, guid: fe49c46164b8d49e68609e65e04bf16f, type: 3}
   element: 2
   cardType: 0
   attackPoint: 5
   healthPoint: 17
   isReversed: 0
   whoPlayed: 0
+  isRewardOnly: 1

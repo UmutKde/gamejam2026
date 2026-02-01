@@ -34,4 +34,7 @@ public class CardData : ScriptableObject
     [Header("Oyun İçi Durumlar")]
     public bool isReversed;
     public bool whoPlayed;
+
+    [Header("Özel Ayarlar")]
+    public bool isRewardOnly; // EĞER BU İŞARETLİYSE: Rastgele kart dağıtımında çıkmaz!
 }

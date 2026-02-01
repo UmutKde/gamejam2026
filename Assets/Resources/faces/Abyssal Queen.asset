@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   CardId: 26
   cardName: Abyssal Queen
-  cardImage: {fileID: 7543548404335723402, guid: 3b75a6bfb9db303479ada081fe94d21b, type: 3}
+  cardImage: {fileID: 7543548404335723402, guid: a9959386b4b3a4170b3d7b6306d384af, type: 3}
   element: 1
   cardType: 0
   attackPoint: 8
   healthPoint: 15
   isReversed: 0
   whoPlayed: 0
+  isRewardOnly: 1
