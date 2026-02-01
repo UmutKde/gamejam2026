@@ -14,7 +14,6 @@ public class GameFlowManager : MonoBehaviour
         Application.Quit();
     }
 
-    // 3. AYARLAR VE OYUN ÝÇÝNDEN GERÝ DÖNMEK ÝÇÝN
     public void ReturnToMenu()
     {
         SceneManager.LoadScene("uiScene");
