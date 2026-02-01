@@ -270,10 +270,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 699bd6f9ab874f4439a34e1d6bcdc2a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Draggable
+  isRevealed: 0
+  isAnimatingCombat: 0
   cardId: 0
   ownerId: 0
   isOwnedByClient: 0
   isPlayedOnBoard: 0
+  isLocked: 0
   hoverScaleAmount: 1.3
   hoverHeightAmount: 80
   dragScaleAmount: 1.1
@@ -281,7 +284,6 @@ MonoBehaviour:
   normalScaleAmount: 1
   animSpeed: 15
   parentToReturnTo: {fileID: 0}
-  isLocked: 0
 --- !u!225 &-4184737757975692347
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -676,7 +678,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -888,7 +890,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
